@@ -9,8 +9,13 @@ class BME680_METEO(object):
 
 	'''
 	=======================================================
-	Class-related globals
+	IMR Class-related globals
 	=======================================================	
+	'''
+
+
+	'''
+	IRM Private globals
 	'''
 
 	__temp = 'TEMPERATURE'
