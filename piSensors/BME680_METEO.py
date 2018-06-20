@@ -9,24 +9,34 @@ class BME680_METEO(object):
 
 	'''
 	=======================================================
+	Class-related globals
+	=======================================================	
+	'''
+
+	__temp = 'TEMPERATURE'
+	__hum  = 'HUMIDITY'
+	__pres = 'PRESSURE'
+	__gas  = 'GAS'
+
+
+	#IRM Gas sensor burn-in time before it becomes operative
+	__GAS_BURN_IN_TIME = GAS_BURN_IN_TIME
+
+
+	#IRM Gas sensor's heater settings
+	__GAS_HEATER_TEMPERATURE = GAS_HEATER_TEMPERATURE
+	__GAS_HEATER_DURATION    = GAS_HEATER_DURATION
+	__GAS_HEATER_PROFILE     = GAS_HEATER_PROFILE
+
+
+
+	'''
+	=======================================================
 	IRM Object constructor
 	=======================================================
 	'''
 
 	def __init__(self, DEBUG = 0):
-		
-		self.__temp = 'TEMPERATURE'
-		self.__hum  = 'HUMIDITY'
-		self.__pres = 'PRESSURE'
-		self.__gas  = 'GAS'
-
-		#IRM Gas sensor burn-in time before it becomes operative
-		self.__GAS_BURN_IN_TIME = GAS_BURN_IN_TIME
-
-		#IRM Gas sensor's heater settings
-		self.__GAS_HEATER_TEMPERATURE = GAS_HEATER_TEMPERATURE
-		self.__GAS_HEATER_DURATION    = GAS_HEATER_DURATION
-		self.__GAS_HEATER_PROFILE     = GAS_HEATER_PROFILE
 		
 		#IRM How many measurements used to compute gas baseline
 		if(GAS_BASELINE_MEASUREMENTS > self.__GAS_BURN_IN_TIME):
