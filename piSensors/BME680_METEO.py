@@ -15,7 +15,7 @@ class BME680_METEO(object):
 
 
 	'''
-	IRM Private globals
+	IRM 'Private' globals
 	'''
 
 	__temp = 'TEMPERATURE'
@@ -103,7 +103,7 @@ class BME680_METEO(object):
 	def __clearBurnInData(self):
 		self.__burnInData = []
 
-	#IRM Must NOT allow high-level access to gas sensor burn-in process
+	# IRM Must NOT allow high-level access to gas sensor burn-in process
 	def __gasBurnIn(self, burnInTime): #IRM Initialize Gas Sensor in a non-blocking action
 		startTime = time.time()
 		currentTime = time.time()
@@ -162,7 +162,7 @@ class BME680_METEO(object):
 
 
 	'''
-	IRM Other publich methods
+	IRM Other public methods
 	'''
 
 	def killBurnInDaemon(self):
