@@ -196,12 +196,12 @@ class Meteo(object):
 def testBench():
 	myMeteo = Meteo(1) # IRM Enable Debugging
 
-	# IRM Playing with sampling rate values
+	# IRM Playing out with sampling rate values
 	print myMeteo.getSensorNames()
 	print myMeteo.getSRvalues()
 
 	print myMeteo.setSR('temp', 500)
-	print myMeteo.setSR('Temp', 600) # IRM Wrong value, must return an error code
+	print myMeteo.setSR('Temp', 600) # IRM Wrong value, should return an error code
 	print myMeteo.setSR('airQ', 5*60)
 
 	print myMeteo.getSRvalues()
