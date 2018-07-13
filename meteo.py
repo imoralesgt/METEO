@@ -31,6 +31,7 @@ TODO:
 			~ sampleSensor (sensorName, samplingRate)
 		+ Generate as many threads running this method as required
 		+ Kill sampling threads during object destruction
+		+ Implement a mutual-exclusion mechanism to avoid access violations
 	- Send data sensors' data via MQTT using topics to distribute data into different channels
 	- Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
 	- Topics should follow the following template:
