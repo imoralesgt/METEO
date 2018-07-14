@@ -1,7 +1,7 @@
 # METEO
 TFM MSEEI Universidad de Malaga - METEO
 
-=======================================================
+===========================================================
 
 
 TODO:
@@ -34,5 +34,5 @@ TODO:
 		* Sampling rate value must be validated to remain between a valid range
 			~ Min sampling rate 1 minute
 			~ Max sampling rate 120 minutes
-			~ If a sampling rate (SR) out of these limits is set, a default value will be chosen \
+			~ If a sampling rate (SR) out of these limits is set, a default value will be chosen
 			  if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
