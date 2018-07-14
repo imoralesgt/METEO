@@ -22,7 +22,7 @@ from defs import * #IRM Global definitions, such as a C Header Definitions File
 '''
 TODO:
 	- Connect to MQTT Broker in object constructor
-		+ Subscribe to every settings topic
+		+ Subscribe to every single settings topic
 		+ Show performance and broker info by subscribing to special $SYS topics 
   		  (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)
 	- Set sampling rates by reading this value from a specific MQTT Topic (which we must be suscribed to)
@@ -121,10 +121,10 @@ class Meteo(object):
 
 			os.system("sudo service mosquitto restart")
 			time.sleep(1)
-			self.__setupMQTTClient(address, port)
+			self.mqttC.reconnect()
 
 
-	# IRM Subscribes to a determined topic using a defined QoS
+	# IRM Subscribes to a determined topic using a determined QoS
 	def __mqttSubscribe(self, topic, qos = 0):
 		self.mqttC.subscribe(topic, qos)
 
