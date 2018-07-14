@@ -7,7 +7,7 @@ TFM MSEEI Universidad de Malaga - METEO
 ToDo:
 - [ ] Connect to MQTT Broker in object constructor
 	* [x] Subscribe to every single settings topic
-	* [ ] Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)
+	* [ ] \(Optional) __Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)__
 - [ ] Set sampling rates by reading this value from a specific MQTT Topic (which we must be suscribed to)
 - [ ] Sample each sensor using separate threads
 	* [ ] Create a generic sampling method, which receives the sensor name as parameter
