@@ -1,10 +1,10 @@
 ## METEO
-#TFM MSEEI Universidad de Malaga - METEO
+# TFM MSEEI Universidad de Malaga - METEO
 
 ===========================================================
 
 
-##ToDo:
+## ToDo List
 # Meteo
 - [ ] Connect to MQTT Broker in object constructor
 	* [x] Subscribe to every single settings topic
