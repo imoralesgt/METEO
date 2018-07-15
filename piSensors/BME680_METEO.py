@@ -67,6 +67,8 @@ class BME680_METEO(object):
 
 		self.__gasBaseLine = 0 #IRM Gas resistance baseline value after burn-in process ended
 
+		self.sensorData = {}
+
 		if self.__DEBUG: #IRM Print out calibration DATA if Debug mode is enabled
 			print("Calibration data:")
 
@@ -202,26 +204,54 @@ class BME680_METEO(object):
 		return self.bme
 
 	#IRM Return BME680 measurements. Gas measurment will be done only when heater is ready
-	def getSensorData(self, temp = True, hum = True, pres = True, gas = True):
+	def getSensorData(self, temp = False, hum = False, pres = False, gas = False):
 		sensor = self.getSensorObject()
-		sensorData = {}
 
 		if sensor.get_sensor_data():
+
 			if temp:
-				sensorData[self.__temp] = float('{:.2f}'.format(sensor.data.temperature))
+				self.sensorData[self.__temp] = float('{:.2f}'.format(sensor.data.temperature))
 
 			if hum:
-				sensorData[self.__hum]  = float('{:.1f}'.format(sensor.data.humidity))
+				self.sensorData[self.__hum]  = float('{:.1f}'.format(sensor.data.humidity))
 
 			if pres:
-				sensorData[self.__pres] = float('{:.1f}'.format(sensor.data.pressure))
+				self.sensorData[self.__pres] = float('{:.1f}'.format(sensor.data.pressure))
 
 			if gas:
 				#IRM Measure gas resistance only if heater is stable and measurements are valid
 				if sensor.data.heat_stable and self.__getGasState():
-					sensorData[self.__gas] = int('{:.0f}'.format(sensor.data.gas_resistance))
+					self.sensorData[self.__gas] = int('{:.0f}'.format(sensor.data.gas_resistance))
+				else:
+					self.sensorData[self.__gas] = False
 
-		return sensorData
+		return self.sensorData
+
+	def sampleTemperature(self):
+		sample = self.getSensorData(temp = True)
+		return sample[self.__temp]
+
+	def sampleHumidity(self):
+		sample = self.getSensorData(hum = True)
+		return sample[self.__hum]
+
+	def samplePressure(self):
+		sample = self.getSensorData(pres = True)
+		return sample[self.__pres]
+
+	def sampleAirQuality(self):
+		sample = self.getSensorData(hum = True, gas = True)
+		# IRM ToDo: Compute Air Quality (%) using Humidity and Gas measurements ===========================
+		return False
+
+	def samplePPM(self):
+		sample = self.getSensorData(gas = True)
+		gasBaseLine = self.getBaseLineValue()
+		#IRM ToDo: Compute PPM using Gas Baseline and Gas measurements ====================================
+		return False
+
+
+
 
 
 
@@ -231,7 +261,7 @@ if __name__ == '__main__':
 
 	try:
 		while True:
-			print sensorAmbiental.getSensorData()
+			print sensorAmbiental.getSensorData(True, True, True, True)
 			time.sleep(1)
 	
 	except KeyboardInterrupt:
