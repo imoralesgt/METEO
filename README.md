@@ -32,7 +32,7 @@
 		- [ ] AirQuality (Air quality as pollution measurement) [airQ]
 		- [ ] PPM (Raw particle count) [ppm]
 - [ ] A special topic may be used to set/get the sampling period dymanically
-	* [ ] ```METEO/Settings/SamplingRate/<sensor>```
+	* [ ] ```METEO/<stationNumber>/Settings/SamplingRate/<sensor>```
 	* [ ] ```<sensor>``` field (sub-topic) is the same as described before
 	* [x] Sampling rate value must be validated to remain between a valid range
 		- [x] Min sampling rate 1 minute
