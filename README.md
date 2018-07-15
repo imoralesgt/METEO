@@ -1,10 +1,11 @@
-# METEO
-TFM MSEEI Universidad de Malaga - METEO
+## METEO
+#TFM MSEEI Universidad de Malaga - METEO
 
 ===========================================================
 
 
-ToDo:
+##ToDo:
+# Meteo
 - [ ] Connect to MQTT Broker in object constructor
 	* [x] Subscribe to every single settings topic
 	* [ ] \(Optional) _Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)_
@@ -34,3 +35,7 @@ ToDo:
 		- [ ] Min sampling rate 1 minute
 		- [ ] Max sampling rate 120 minutes
 		- [ ] If a sampling rate (SR) out of these limits is set, a default value will be chosen if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
+		
+# BME680_METEO
+- [ ] Compute Air Quality (%) using Humidity and Gas measurements
+- [ ] Compute PPM using Gas Baseline and Gas measurements
