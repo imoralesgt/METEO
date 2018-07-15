@@ -7,8 +7,8 @@
 
 # ToDo List
 ## Meteo
-- [ ] Connect to MQTT Broker in object constructor
-	* [ ] Subscribe to every single 'settings' topic
+- [X] Connect to MQTT Broker in object constructor
+	* [x] Subscribe to every single 'settings' topic
 	* [ ] \(Optional) _Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)_
 - [ ] Set sampling rates by reading this value from a specific MQTT Topic (which we must be suscribed to)
 - [ ] Sample each sensor using separate threads
