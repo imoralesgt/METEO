@@ -14,47 +14,101 @@ import socket
 import os
 import time
 
-import piSensors.BME680_METEO
-import piSensors.BH1750_METEO
+import piSensors.BME680_METEO as BME680
+import piSensors.BH1750_METEO as BH1750
 from defs import * #IRM Global definitions, such as a C Header Definitions File
 
 
 '''
-TODO:
-	- Connect to MQTT Broker in object constructor
-		+ Subscribe to every single settings topic
-		+ Show performance and broker info by subscribing to special $SYS topics 
-  		  (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)
-	- Set sampling rates by reading this value from a specific MQTT Topic (which we must be suscribed to)
-	- Sample each sensor using separate threads
-		+ Create a generic sampling method, which receives the sensor name as parameter
-			~ sampleSensor (sensorName, samplingRate)
-		+ Generate as many threads running this method as required
-		+ Kill sampling threads during object destruction
-		+ Implement a mutual-exclusion mechanism to avoid access violations
-	- Send data sensors' data via MQTT using topics to distribute data into different channels
-	- Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
-	- Topics should follow the following template:
-		+ METEO/<stationNumber>/<sensor>
-		+ Valid <stationNumber> (identifiers) are integers from 0 to N-1
-		+ Valid <sensor> are:
-			~ Temperature (Environmental temperature) [temp]
-			~ Humidity (Relative humidity) [hum]
-			~ Pressure (Local atmospheric pressure) [pres]
-			~ Light (Incident light measurement) [light]
-			~ AirQuality (Air quality as pollution measurement) [airQ]
-			~ PPM (Raw particle count) [ppm]
-	- A special topic may be used to set/get the sampling period dymanically
-		+ METEO/Settings/SamplingRate/<sensor>
-		+ <sensor> field (sub-topic) is the same as described before
-		+ Sampling rate value must be validated to remain between a valid range
-			~ Min sampling rate 1 minute
-			~ Max sampling rate 120 minutes
-			~ If a sampling rate (SR) out of these limits is set, a default value will be chosen \
-			  if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
-
+TODO list: check readme at github repo (https://github.com/imoralesgt/METEO)
 '''
 
+
+'''
+========================================================
+IRM Mutual-exclusion object to avoid simultaneous access
+tries to a particular shared resource/sensor/device.
+
+Its usage implies locking operation until the execution
+queue is empty. Same object may be invoked/modified from
+different threads.
+========================================================
+'''
+class Mutex(object):
+
+	def __init__(self, autoExec = True, DEBUG = False):
+		# IRM determines whether the shared resource is locked or unlocked
+		self.__locked = False 
+
+		# IRM Queue as a list of pending executions from multiple sources
+		# Each element within this list must accomplish with the following format:
+		# [methodName, [list of parameters]]
+		self.executionQueue = []
+
+		# IRM Mutex is used only as a semaphore? or should it also execute pending methods?
+		self.__autoExec = autoExec
+
+		# IRM Debug enabled/disabled
+		self.DEBUG = DEBUG
+
+
+	'''
+	=======================================================
+	IRM Private methods encapsulation
+	=======================================================
+	'''		
+
+	# IRM Reserved method. Updates and executes remaining (method, (parameters)) pairs if present
+	def __updateLockState(self):
+		if len(self.executionQueue) > 0: # IRM If there is still at least 1 pending ejecution
+			self.__locked = True
+			execPair = self.executionQueue.pop(0)
+			if self.DEBUG:
+				print execPair
+			return self.__execute(execPair[0], execPair[1]) # IRM (Method, Parameters)
+		else:
+			self.unlock() # IRM If nothing pending, free (unlock) the resource
+		
+	# IRM Run a determined method with the passed parameters, which are then unpacked using (*)
+	def __execute(self, method, parameters):
+		data = method(*parameters) # IRM Run required method with passed parameters
+		return data
+
+	'''
+	=======================================================
+	IRM Public Methods
+	=======================================================
+	'''
+
+	# IRM Reserve shared resource and queue a (method, [parameters]) pair
+	# to be executed in a FIFO fashion. 
+	def lock(self, method = None, parameters = ['Resource locked']): 
+		self.__locked = True
+		if self.__autoExec: # IRM Should I run something while locked?
+			# IRM A tuple to represent (method, (parameters)) in queue
+			self.executionQueue.append((method, parameters))
+
+			# IRM Check whether resource is busy or not and return the
+			# result of executing the queued method
+			return self.__updateLockState()
+
+	# IRM Only should be invoked by user if AutoExec is disabled!
+	def unlock(self):
+		if not self.__autoExec:
+			self.__locked = False
+
+	def isMutexLocked(self):
+		return self.__locked
+
+	def getAutoExec(self):
+		return self.__autoExec
+
+
+'''
+=======================================================
+IRM Main METEO front-end class for user-level access
+=======================================================
+'''
 class Meteo(object):
 
 
@@ -63,7 +117,20 @@ class Meteo(object):
 	IMR Class-related globals
 	=======================================================	
 	'''
+	
+	# IRM Variable names (Pressure, Temperature, Humidity, etc.)
 	SENSOR_NAMES = AVAILABLE_SENSORS
+
+	# IRM What variables should I measure with each sensor?
+	# Temperature -> BME680
+	# Pressure    -> BME680
+	# Light       -> BH1750
+	# Humidity    -> BME680 
+	# etc ...
+	SENSORS_MAP  = SENSORS_VAR_MAP
+
+	SENSOR_BME680 = SENSOR_BME680
+	SENSOR_BH1750 = SENSOR_BH1750
 
 
 
@@ -72,12 +139,19 @@ class Meteo(object):
 	IRM Object constructor
 	=======================================================
 	'''
-	def __init__(self, DEBUG = 0):
+	def __init__(self, stationNumber = 0, DEBUG = 0):
 		self.__initSensorSR()
 		self.DEBUG = DEBUG
 		self.ERRORS = ERRORS
+		self.setStationNumber(stationNumber)
 
 		self.__initMQTTClient()
+
+		self.bme = BME680.BME680_METEO()
+		self.bh  = BH1750.BH1750_METEO()
+
+		self.bme.bmeInit()
+		self.bh.initBH1750()
 		
 
 	'''
@@ -178,14 +252,96 @@ class Meteo(object):
 	def getSensorNames(self):
 		return self.SENSOR_NAMES
 
+	def getSensorMap(self):
+		return self.SENSORS_MAP
+
 	def getSRvalues(self): #IRM Sampling rate values for each sensor
 		return self.__SR
+
+	def getStationNumber(self):
+		return self.stationNumber
+
+	def setStationNumber(self, n = 0):
+		if type(n) == int:
+			if n >= 0:
+				self.stationNumber = n
+		else:
+			return self.ERRORS[INVALID_STATION_NUMBER]
 
 	'''
 	IRM Other public methods
 	'''
 
-	
+	# IRM Sample a determined variable in one-shot mode
+	def sampleSensor(self, sensorName):
+		if sensorName in self.getSensorNames():
+			sMap = self.getSensorMap()
+			if sMap[sensorName] == self.SENSOR_BME680:
+			# IRM Measure with BME680_METEO class
+				if sensorName == TEMP:
+					sample = self.bme.sampleTemperature()
+					if sample is not False:
+						return (True, [sample])
+					else:
+						return (False, [self.ERRORS[INVALID_TEMP_VALUE]])
+
+
+				elif sensorName == HUM:
+					sample = self.bme.sampleHumidity()
+					if sample is not False:
+						return (True, [sample])
+					else:
+						return (False, [self.ERRORS[INVALID_HUM_VALUE]])
+
+
+				elif sensorName == PRES:
+					sample = self.bme.samplePressure()
+					if sample is not False:
+						return (True, [sample])
+					else:
+						return (False, [self.ERRORS[INVALID_PRES_VALUE]])
+
+
+				elif sensorName == AIR_Q:
+					sample = self.bme.sampleAirQuality()
+					if sample is not False:
+						return (True, [sample])
+					else:
+						return (False, [self.ERRORS[INVALID_AIR_Q_VALUE]])
+
+
+				elif sensorName == PPM:
+					sample = self.bme.samplePPM()
+					if sample is not False:
+						return (True, [sample])
+					else:
+						return (False, [self.ERRORS[INVALID_PPM_VALUE]])
+
+
+				else:
+					return (False, [self.ERRORS[INVALID_SENSOR_NAME]])
+
+
+			elif sMap[sensorName] == self.SENSOR_BH1750:
+			# IRM Measure with BH1750_METEO class
+
+				# IRM Sensor data return format:
+				# (Successful measurement, [List with measurements])
+				# Successful measurement : True False
+				# List with measurements: 
+				# If successful : List with measurements
+				# If unsuccessful : List with a single element containing error code
+
+				light = self.bh.bh1750MeasureLight()
+				if light is not False:
+					return (True, [light])
+				else:
+					return (False, [self.ERRORS[INVALID_LIGHT_VALUE]])
+
+			else:
+				return (False, self.ERRORS[INVALID_SENSOR_NAME])
+		else:
+			return (False, self.ERRORS[INVALID_SENSOR_NAME])
 
 
 
@@ -194,7 +350,7 @@ class Meteo(object):
 
 
 
-def testBench():
+def meteoTestBench():
 	myMeteo = Meteo(1) # IRM Enable Debugging
 
 	# IRM Playing out with sampling rate values
@@ -207,11 +363,129 @@ def testBench():
 
 	print myMeteo.getSRvalues()
 
+	print myMeteo.sampleSensor(TEMP)
+	print myMeteo.sampleSensor(LIGHT)
+	print myMeteo.sampleSensor(PPM)
+	print myMeteo.sampleSensor(AIR_Q)
+	print myMeteo.sampleSensor(HUM)
+	
+
+
+
+def mutexTestBench(): # IRM Simple mutex tests without threads
+
+	myMeteo = Meteo()
+
+	bme180Mutex = Mutex()
+
+	print 'MUTEX running on AutoExec Mode'
+
+	temp = bme180Mutex.lock(myMeteo.sampleSensor, [TEMP])
+	if temp[0]:
+		print 'Temperature: ' + str(temp[1][0]) + ' Celsius'
+	else:
+		print '*Invalid temp: ERROR ' + str(temp[1][0])
+
+	hum  = bme180Mutex.lock(myMeteo.sampleSensor, [HUM])
+	if hum[0]:
+		print 'Humidity: ' + str(hum[1][0]) + '%'	
+	else:
+		print '*Invalid hum:  ERROR ' + str(temp[1][0])
+
+	airQ = bme180Mutex.lock(myMeteo.sampleSensor, [AIR_Q])
+	if airQ[0]:
+		print 'Air Quality: ' + str(airQ[1][0]) + '%'
+	else:
+		print '*Invalid AirQ:  ERROR ' + str(airQ[1][0])
+
+
+	print 'MUTEX running without AutoExec Mode'
+
+	bme180NoAutoExecMutex = Mutex(autoExec = False)
+	while(bme180NoAutoExecMutex.isMutexLocked()): # IRM Wait until mutex (and shared resource) is available
+		print 'Mutex Locked waiting until released'
+
+	bme180NoAutoExecMutex.lock()
+	temp = myMeteo.sampleSensor(TEMP)
+	if temp[0]:
+		print 'Temperature: ' + str(temp[1][0]) + ' Celsius'
+	else:
+		print '*Invalid temp: ERROR ' + str(temp[1][0])
+
+
+tempSensor    = Meteo()
+tempMutex     = Mutex(autoExec = False)
+tempMutexAuto = Mutex(autoExec = True)
+	
+def sampleTempTest(mutex = True, threadNumber = 0):
+	if mutex:
+		while tempMutex.isMutexLocked():
+			pass
+		tempMutex.lock()
+		print 'Mutex Owned! Thread # ' + str(threadNumber)
+
+	temp = tempSensor.sampleSensor(TEMP)
+
+	if mutex:
+		tempMutex.unlock()
+		print 'Mutex Released! Thread # ' + str(threadNumber)
+
+	print 'Thread ' + str(threadNumber) + ' --- ',
+	if temp[0]:
+		print temp[1][0]
+	else:
+		print False
+
+def sampleTempTestWithAutoExec(mutex = True, threadNumber = 0):
+	if mutex:
+		temp = tempMutexAuto.lock(tempSensor.sampleSensor, [TEMP])
+		print 'Mutex Owned! Thread # ' + str(threadNumber)
+
+	print 'Thread ' + str(threadNumber) + ' --- ',
+	if temp[0]:
+		print temp[1][0]
+	else:
+		print False	
+
+
+# IRM Using Threading native mutex mechanism (lock/unlock)
+tTempMutex = threading.Lock()
+def sampleTempTestThreadingLock(mutex = True, threadNumber = 0):
+	if mutex:
+		tTempMutex.acquire()
+		print 'Mutex Owned! Thread # ' + str(threadNumber)
+
+	temp = tempSensor.sampleSensor(TEMP)
+
+	if mutex:
+		tTempMutex.release()
+		print 'Mutex Released! Thread # ' + str(threadNumber)
+
+	print 'Thread ' + str(threadNumber) + ' --- ',
+	if temp[0]:
+		print temp[1][0]
+	else:
+		print False	
+
+
+def mutexAndThreadsTestBench():
+	MAX_TASKS = 20 # IRM Max simultaneous threads to run Temperature Measurement
+	MUTEX_ENABLED = True # IRM Enable/Disable to check Mutex functionality
+
+	for i in range(MAX_TASKS):
+		#tempMutexThread = threading.Thread(target = sampleTempTest, args = [True, i], name = 'Temp Sensor ' + str(i), )
+		tempMutexThread = threading.Thread(target = sampleTempTestWithAutoExec, args = [True, i], name = 'Temp Sensor ' + str(i), )
+		#tempMutexThread = threading.Thread(target = sampleTempTestThreadingLock, args = [True, i], name = 'Temp Sensor ' + str(i), )
+		#tempMutexThread.setDaemon(True)
+		tempMutexThread.start()
+	
+
 
 
 
 
 
 if __name__ == '__main__':
-	testBench()
-
+	#meteoTestBench()
+	#mutexTestBench()
+	mutexAndThreadsTestBench()
