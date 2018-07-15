@@ -38,6 +38,9 @@
 		- [x] Min sampling rate 1 minute
 		- [x] Max sampling rate 120 minutes
 		- [x] If a sampling rate (SR) out of these limits is set, a default value will be chosen if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
+- [ ] A special topic may be used to announce "I'm Alive" messages from stations to broker
+	* [ ] ```METEO/Alive```
+	* [ ] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
 		
 ## BME680_METEO
 - [ ] Compute Air Quality (%) using Humidity and Gas measurements
