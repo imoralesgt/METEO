@@ -1,5 +1,6 @@
 # METEO
-## TFM MSEEI Universidad de Malaga - METEO
+## TFM MSEEI Universidad de Malaga
+## Iván René Morales Argueta - 2018
 
 ===========================================================
 
