@@ -21,7 +21,7 @@
 	* [X] Implement a mutual-exclusion mechanism to avoid access violations
 - [ ] Send sensors' data via MQTT using topics to distribute data into different channels
 - [ ] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
-- [ ] Topics should follow the following template:
+- [ ] Topics should accomplish with the following template:
 	* [ ] ```METEO/<stationNumber>/<sensor>```
 	* [ ] Valid ```<stationNumber>``` (identifiers) are integers from 0 to N-1
 	* [ ] Valid ```<sensor>``` values are:
@@ -38,9 +38,9 @@
 		- [x] Min sampling rate 1 minute
 		- [x] Max sampling rate 120 minutes
 		- [x] If a sampling rate (SR) out of these limits is set, a default value will be chosen if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
-- [ ] A special topic may be used to announce "I'm Alive" messages from stations to broker
-	* [ ] ```METEO/Alive```
-	* [ ] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
+- [x] A special topic may be used to announce "I'm Alive" messages from stations to broker
+	* [x] ```METEO/Alive```
+	* [x] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
 		
 ## BME680_METEO
 - [ ] Compute Air Quality (%) using Humidity and Gas measurements
