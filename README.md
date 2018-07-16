@@ -11,7 +11,7 @@
 	* [x] Subscribe to each ```Settings``` sub-topic ```Settings/#```
 	* [ ] \(Optional) _Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)_
 - [ ] Set sampling rates by reading this value from a specific MQTT Topic (which we must be suscribed to)
-	* [ ] ```Settings/SamplingRate```
+	* [ ] ```Settings/SamplingRate/<sensor>```
 - [ ] Sample each sensor using separate threads
 	* [x] Create a generic sampling method (one-shot), which receives the sensor name as parameter
 		- [x] ```sampleSensor (sensorName)```
