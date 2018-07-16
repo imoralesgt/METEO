@@ -6,7 +6,7 @@ Third-party dependencies
 
 
 
-import paho.mqtt.client as mqtt
+import paho.mqtt.client  as mqttClient
 
 
 import threading
@@ -139,19 +139,25 @@ class Meteo(object):
 	IRM Object constructor
 	=======================================================
 	'''
-	def __init__(self, stationNumber = 0, DEBUG = 0):
+	def __init__(self, DEBUG = 0):
 		self.__initSensorSR()
 		self.DEBUG = DEBUG
 		self.ERRORS = ERRORS
-		self.setStationNumber(stationNumber)
+		self.setStationNumber(STATION_NUMBER)
 
+		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
 		self.__initMQTTClient()
+		
 
 		self.bme = BME680.BME680_METEO()
 		self.bh  = BH1750.BH1750_METEO()
 
 		self.bme.bmeInit()
 		self.bh.initBH1750()
+
+		# IRM Mutexes to avoid multiple access tries from different threads
+		self.bme680Mutex = Mutex(autoExec = False) 
+		#self.bh1750Mutex = Mutex(autoExec = False)
 		
 
 	'''
@@ -183,9 +189,19 @@ class Meteo(object):
 			self.__SR[i] = self.__getDefaultSR()
 
 
+
+	'''
+	IRM MQTT-related private methods
+	'''
+
 	# IRM Connects to MQTT Broker as client
 	def __setupMQTTClient(self, address, port):
-		self.mqttC = mqtt.Client()
+		self.mqttC = mqttClient.Client()
+
+		self.mqttC.on_message = self.__mqttCallback_onMessage
+		self.mqttC.on_connect = self.__mqttCallback_onConnect
+		self.mqttC.on_publish = self.__mqttCallback_onPublish
+
 		try:
 			self.mqttC.connect(address, port)
 		except socket.error:
@@ -198,19 +214,131 @@ class Meteo(object):
 			self.mqttC.reconnect()
 
 
-	# IRM Subscribes to a determined topic using a determined QoS
-	def __mqttSubscribe(self, topic, qos = 0):
+	# IRM Subscribes to a determined topic using a determined QoS (QoS = 2 default)
+	def __mqttSubscribe(self, topic, qos = 2):
 		self.mqttC.subscribe(topic, qos)
+		self.mqttThread = threading.Thread(target = self.mqttC.loop_forever, name = 'MQTT Subscriber')
+		self.mqttThread.start()
+
 
 	# IRM Initializes MQTT Client according to this project's requirements
 	def __initMQTTClient(self):
 		broker = MQTT_BROKER
 		port   = MQTT_PORT
+
+
+		# IRM Init MQTT Client (susbscriber)
 		self.__setupMQTTClient(broker, port)
 
+
 		# IRM Subscribe to every "settings" sub-topic available
-		settingsTopic = ROOT_TOPIC + '/' + SETTINGS_TOPIC + '/' + MQTT_MULTI_LEVEL
+		settingsTopic = ROOT_TOPIC + '/' + str(self.getStationNumber()) + '/' + SETTINGS_TOPIC + '/' + MQTT_MULTI_LEVEL
 		self.__mqttSubscribe(settingsTopic)
+
+		# IRM "Keep Alive" beacon
+		self.keepAliveTopic = ROOT_TOPIC + '/' + KEEP_ALIVE_TOPIC
+		keepAliveThread = threading.Thread(target = self.__mqttPublishKeepAlive, args = [KEEP_ALIVE_BEACON_PERIOD])
+		keepAliveThread.start()
+
+	# IRM Invoke one-shot publish to MQTT default broker
+	def __mqttPublish(self, topic, data):
+		self.mqttC.publish(topic = topic, payload = data, qos = 2)
+
+	# IRM Keep alive beacon, should be invoked using a thread, as this is a blocking method
+	def __mqttPublishKeepAlive(self, period):
+		while True:
+			# IRM Keep-alive beacon only contains self station number
+			self.__mqttPublish(self.keepAliveTopic, self.getStationNumber())
+			if self.DEBUG:
+				print "I'm alive!"
+
+			time.sleep(period) # IRM Wait for a determined time until next beacon
+
+	# IRM Append ('Topic','Data') to Rx Queue
+	def __mqttMsgQueueAppend(self, data): 
+		data = (str(data[0]), data[1])
+		self.__mqttRxMsgQueue.append(data)
+		if self.DEBUG:
+			print data
+
+	def __mqttMsgQueueSupervisor(self):
+		while True:
+			if len(self.__mqttRxMsgQueue) > 0:
+				queuePop = self.__mqttRxMsgQueue.pop(0)
+				self.__mqttParseRxMessage(queuePop) # IRM Pop and parse first element in queue
+				if self.DEBUG:
+					print 'Queue popped: ' + str(queuePop)
+			time.sleep(MQTT_RX_QUEUE_SUPERVISE_PERIOD)
+
+	# IRM MQTT Received message via a subscribed topic callback
+	def __mqttCallback_onMessage(self, mqttc, obj, msg): 
+		self.__mqttMsgQueueAppend( (msg.topic, msg.payload) )
+
+	# IRM MQTT Successful connection callback
+	def __mqttCallback_onConnect(self, mqttc, obj, flags, rc):
+
+		# IRM Start supervising MQTT RX Queue. If something arrives, parse it immediately
+		mqttQueueSupervisorThread = threading.Thread(target = self.__mqttMsgQueueSupervisor)
+		mqttQueueSupervisorThread.start()
+
+		# IRM Launch periodic sampling of connected sensors
+		for i in self.SENSOR_NAMES:
+			samplingThread = threading.Thread(target = self.periodicSampler, args = [i], name = str(i) + ' periodic sampler')
+
+			if self.DEBUG:
+				print 'Launching thread: ' + str(i)
+
+		if self.DEBUG:
+			print 'Connected! rc: ' + str(rc)
+
+	# IRM MQTT Published callback
+	def __mqttCallback_onPublish(self, mqttc, obj, mid):
+		if self.DEBUG:
+			print 'Published! mid: ' + str(mid)
+
+
+
+
+	# IRM Parse received message and execute corresponding action
+	# As initial subscription discards messages with <stationNumber>
+	# which differ with self <stationNumber>, topic discrimination
+	# will start from /Settings sub-topic
+	def __mqttParseRxMessage(self, data):
+		# IRM Topic example: METEO/<stationNumber>/Settings/SamplingRate/<sensor>
+		topic   = data[0]
+		payload = data[1]
+
+		if SETTINGS_TOPIC in topic: # IRM Is this a config message from GUI?
+			topic = str(topic.split('/'+ SETTINGS_TOPIC +'/')[1]) # IRM <operation>/<sensor>
+
+			if self.DEBUG:
+				print 'Partially parsed topic: ' + topic
+
+			if SR_TOPIC in topic: # IRM is this a Sampling Rate config order from GUI?
+				sensor = str(topic.split(SR_TOPIC + '/')[1]) # IRM Which sensor should I modify?
+				if sensor in SENSOR_TOPICS_R:
+					sensorName = SENSOR_TOPICS_R[sensor]
+					newSR  = int(payload) # IRM Sampling Rate in seconds
+
+					
+					ok = self.setSR(sensorName, newSR)
+
+					if self.DEBUG:
+						print 'New Sampling Rate for ' + sensor + ': ' + str(newSR) + ' seconds'
+						print 'Sampling rates: ' + str(self.getSRvalues())
+
+
+					return ok
+				else:
+					if self.DEBUG:
+						print 'Invalid sensor name/topic: ' + str(sensor)
+						return ERRORS[INVALID_SENSOR_NAME]
+
+	# IRM Publish formatted sensor data to MQTT Topic
+	def __mqttPublishSensorValue(self, sensorName, value):
+		topic = ROOT_TOPIC + '/' + self.getStationNumber() + '/' + DATA_TOPIC + '/' + SENSOR_TOPICS[sensorName]
+		self.__mqttPublish(topic, value)
+
 
 
 	'''
@@ -233,19 +361,17 @@ class Meteo(object):
 			if interval >= minSR and interval <= maxSR: # IRM Valid/Invalid interval
 				self.__SR[sensor] = interval
 			else:
-				return self.ERRORS[INVALID_SAMPLING_RATE] # IRM Invalid sampling rate
-				
 				if self.DEBUG:
 					print 'Invalid sampling rate (SR): ' + str(interval) + ' seconds'
 					print 'SR must be between [' + str(minSR) + ',' + str(maxSR) + ']'
+				return self.ERRORS[INVALID_SAMPLING_RATE] # IRM Invalid sampling rate
 					
 		else:
-			return self.ERRORS[INVALID_SENSOR_NAME] # IRM
-			
 			if self.DEBUG:
 				print 'Sensor "' + sensor + '" not valid.'
 				print 'Sensor name must be one of the following in the list' + str(sensorNames)
-				
+			
+			return self.ERRORS[INVALID_SENSOR_NAME] # IRM	
 
 		return 0 # IRM No errors during operation
 
@@ -272,14 +398,67 @@ class Meteo(object):
 	IRM Other public methods
 	'''
 
+	# IRM Periodic sensor sampling method. Must be invoked from a separate thread
+	def periodicSampler(self, sensorName):
+		while True:
+			sensorValue = self.sampleSensor(sensorName)
+
+			if self.DEBUG:
+				print 'Periodic sampler received this sample: ' + str(sensorValue)
+
+			ok = sensorValue[0]
+			if ok == True:
+				value = sensorValue[1]
+
+				# IRM Publish sensor value to MQTT Topic
+				self.__mqttPublishSensorValue(sensorName, value)
+
+			sleepInterval = self.getSRvalues()[sensorName]
+			time.sleep(sleepInterval)
+
+	'''
+	def sampleTempTest(mutex = True, threadNumber = 0):
+		if mutex:
+			while tempMutex.isMutexLocked():
+				pass
+			tempMutex.lock()
+			print 'Mutex Owned! Thread # ' + str(threadNumber)
+
+		temp = tempSensor.sampleSensor(TEMP)
+
+		if mutex:
+			tempMutex.unlock()
+			print 'Mutex Released! Thread # ' + str(threadNumber)
+
+		print 'Thread ' + str(threadNumber) + ' --- ',
+		if temp[0]:
+			print temp[1][0]
+		else:
+			print False
+
+		bme680Mutex = Mutex()
+		bh1750Mutex = Mutex()
+	'''
+
+
+
+
 	# IRM Sample a determined variable in one-shot mode
 	def sampleSensor(self, sensorName):
 		if sensorName in self.getSensorNames():
 			sMap = self.getSensorMap()
 			if sMap[sensorName] == self.SENSOR_BME680:
 			# IRM Measure with BME680_METEO class
+
+
 				if sensorName == TEMP:
+					while self.bme680Mutex.isMutexLocked():
+						pass
+					self.bme680Mutex.lock()
+
 					sample = self.bme.sampleTemperature()
+
+					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -287,7 +466,13 @@ class Meteo(object):
 
 
 				elif sensorName == HUM:
+					while self.bme680Mutex.isMutexLocked():
+						pass
+					self.bme680Mutex.lock()
+
 					sample = self.bme.sampleHumidity()
+
+					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -295,7 +480,13 @@ class Meteo(object):
 
 
 				elif sensorName == PRES:
+					while self.bme680Mutex.isMutexLocked():
+						pass
+					self.bme680Mutex.lock()
+
 					sample = self.bme.samplePressure()
+
+					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -303,7 +494,13 @@ class Meteo(object):
 
 
 				elif sensorName == AIR_Q:
+					while self.bme680Mutex.isMutexLocked():
+						pass
+					self.bme680Mutex.lock()
+
 					sample = self.bme.sampleAirQuality()
+
+					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -311,7 +508,13 @@ class Meteo(object):
 
 
 				elif sensorName == PPM:
+					while self.bme680Mutex.isMutexLocked():
+						pass
+					self.bme680Mutex.lock()
+
 					sample = self.bme.samplePPM()
+
+					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -351,30 +554,30 @@ class Meteo(object):
 
 
 def meteoTestBench():
-	myMeteo = Meteo(1) # IRM Enable Debugging
+	myMeteo = Meteo(True) # IRM Enable Debugging
 
 	# IRM Playing out with sampling rate values
-	print myMeteo.getSensorNames()
-	print myMeteo.getSRvalues()
+	#print myMeteo.getSensorNames()
+	#print myMeteo.getSRvalues()
 
-	print myMeteo.setSR('temp', 500)
-	print myMeteo.setSR('Temp', 600) # IRM Wrong value, should return an error code
-	print myMeteo.setSR('airQ', 5*60)
+	#print myMeteo.setSR('temp', 500)
+	#print myMeteo.setSR('Temp', 600) # IRM Wrong value, should return an error code
+	#print myMeteo.setSR('airQ', 5*60)
 
-	print myMeteo.getSRvalues()
+	#print myMeteo.getSRvalues()
 
-	print myMeteo.sampleSensor(TEMP)
-	print myMeteo.sampleSensor(LIGHT)
-	print myMeteo.sampleSensor(PPM)
-	print myMeteo.sampleSensor(AIR_Q)
-	print myMeteo.sampleSensor(HUM)
+	#print myMeteo.sampleSensor(TEMP)
+	#print myMeteo.sampleSensor(LIGHT)
+	#print myMeteo.sampleSensor(PPM)
+	#print myMeteo.sampleSensor(AIR_Q)
+	#print myMeteo.sampleSensor(HUM)
 	
 
 
 
 def mutexTestBench(): # IRM Simple mutex tests without threads
 
-	myMeteo = Meteo()
+	myMeteo = Meteo(True)
 
 	bme180Mutex = Mutex()
 
@@ -486,6 +689,6 @@ def mutexAndThreadsTestBench():
 
 
 if __name__ == '__main__':
-	#meteoTestBench()
+	meteoTestBench()
 	#mutexTestBench()
-	mutexAndThreadsTestBench()
+	#mutexAndThreadsTestBench()
