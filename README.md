@@ -40,6 +40,7 @@
 		- [x] Max sampling rate 120 minutes
 		- [x] If a sampling rate (SR) out of these limits is set, a default value will be chosen if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
 - [x] A special topic may be used to announce "I'm Alive" messages from stations to broker
+	* [x] Invoke it via a separate thread as it may behave as a locking method
 	* [x] ```METEO/Alive```
 	* [x] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
 		
