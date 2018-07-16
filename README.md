@@ -19,7 +19,7 @@
 	* [ ] Kill sampling threads during object destruction
 	* [X] Implement a mutual-exclusion mechanism to avoid access violations
 - [ ] Send sensors' data via MQTT using topics to distribute data into different channels
-- [ ] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
+- [x] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
 - [ ] Topics should accomplish with the following template:
 	* [ ] ```METEO/<stationNumber>/Data/<sensor>```
 	* [ ] Valid ```<stationNumber>``` (identifiers) are integers from 0 to N-1
