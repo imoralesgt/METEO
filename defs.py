@@ -22,11 +22,15 @@ SENSORS_VAR_MAP   = {TEMP : SENSOR_BME680, HUM : SENSOR_BME680,
 IRM MQTT Client-related definitions
 '''
 # IRM MQTT Topics/Sub-topics
-ROOT_TOPIC     = 'METEO'
-SENSOR_TOPICS  = {TEMP : 'Temperature', HUM : 'Humidity', PRES : 'Pressure', 
-				 LIGHT : 'Light', AIR_Q : 'AirQuality', PPM : 'PPM'}
-SETTINGS_TOPIC = 'Settings'
-SR_TOPIC       = 'SamplingRate'
+ROOT_TOPIC       = 'METEO'
+SENSOR_TOPICS    = {TEMP : 'Temperature', HUM : 'Humidity', PRES : 'Pressure', 
+					LIGHT : 'Light', AIR_Q : 'AirQuality', PPM : 'PPM'}
+SENSOR_TOPICS_R  = {'Temperature' : TEMP, 'Humidity' : HUM, 'Pressure' : PRES,
+					'Light' : LIGHT, 'AirQuality' : AIR_Q, 'PPM' : PPM}
+DATA_TOPIC       = 'Data'
+SETTINGS_TOPIC   = 'Settings'
+SR_TOPIC         = 'SamplingRate'
+KEEP_ALIVE_TOPIC = 'Alive'
 
 MQTT_SINGLE_LEVEL = '+'
 MQTT_MULTI_LEVEL  = '#'
@@ -34,17 +38,22 @@ MQTT_MULTI_LEVEL  = '#'
 # IRM MQTT-related clients' settings
 IDENTIFIER_TOPIC_TYPE = int
 MAX_CLIENTS = 256
+STATION_NUMBER = 0 # IRM Change if this is not the main METEO station in the network
 
 # IRM Network-related settings
 MQTT_BROKER = '127.0.0.1' # IRM MQTT broker will always be running on localhost (at least for this version)
 MQTT_PORT   = 1883 # IRM MQTT borker port
+
+# IRM other MQTT-related defines
+KEEP_ALIVE_BEACON_PERIOD = 60 # IRM Send beacon every minute
+MQTT_RX_QUEUE_SUPERVISE_PERIOD = 0.1 # IRM Check input queue every 100 ms
 
 '''
 IRM Other METEO settings
 '''
 MIN_SAMPLING_RATE     = 1   * 60 # IRM 1 minute
 MAX_SAMPLING_RATE     = 120 * 60 # IRM 2 hours
-DEFAULT_SAMPLING_RATE = 15  * 60 # IRM 15 minutes
+DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE
 
 '''
 IRM Errors list
