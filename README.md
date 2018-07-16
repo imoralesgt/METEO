@@ -21,7 +21,7 @@
 - [ ] Send sensors' data via MQTT using topics to distribute data into different channels
 - [ ] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
 - [ ] Topics should accomplish with the following template:
-	* [ ] ```METEO/<stationNumber>/<sensor>```
+	* [ ] ```METEO/<stationNumber>/Data/<sensor>```
 	* [ ] Valid ```<stationNumber>``` (identifiers) are integers from 0 to N-1
 	* [ ] Valid ```<sensor>``` values are:
 		- [ ] Temperature (Environmental temperature) [temp]
