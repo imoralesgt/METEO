@@ -41,7 +41,7 @@ class BME680_METEO(object):
 	=======================================================
 	'''
 
-	def __init__(self, DEBUG = 0):
+	def __init__(self, DEBUG = False):
 		
 		#IRM How many measurements used to compute gas baseline
 		if(GAS_BASELINE_MEASUREMENTS > self.__GAS_BURN_IN_TIME):
@@ -229,15 +229,24 @@ class BME680_METEO(object):
 
 	def sampleTemperature(self):
 		sample = self.getSensorData(temp = True)
-		return sample[self.__temp]
+		if self.__temp in sample:
+			return sample[self.__temp]
+		else:
+			return False
 
 	def sampleHumidity(self):
 		sample = self.getSensorData(hum = True)
-		return sample[self.__hum]
+		if self.__hum in sample:
+			return sample[self.__hum]
+		else:
+			return False
 
 	def samplePressure(self):
 		sample = self.getSensorData(pres = True)
-		return sample[self.__pres]
+		if self.__pres in sample:
+			return sample[self.__pres]
+		else:
+			return False
 
 	def sampleAirQuality(self):
 		sample = self.getSensorData(hum = True, gas = True)
