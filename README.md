@@ -7,27 +7,27 @@
 
 # ToDo List
 ## Meteo
-- [X] Connect to MQTT Broker in object constructor
+- [x] Connect to MQTT Broker in object constructor
 	* [x] Subscribe to each ```Settings``` sub-topic ```Settings/#```
 	* [ ] \(Optional) _Show performance and broker info by subscribing to special $SYS topics (https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices)_
-- [ ] Sample each sensor using separate threads
+- [x] Sample each sensor using separate threads
 	* [x] Create a generic sampling method (one-shot), which receives the sensor name as parameter
 		- [x] ```sampleSensor (sensorName)```
 		- [x] Front-end interface variables (i.e. Air Quality, instead of Humidity+Gas_Resistance)
-	- [ ] Create a thread/method to periodically launch the one-shot sampling method
-	* [ ] Generate as many threads running this method as required
-	* [ ] Kill sampling threads during object destruction
+	- [x] Create a thread/method to periodically launch the one-shot sampling method
+	* [x] Generate as many threads running this method as required
+	* ~~[ ] Kill sampling threads during object destruction~~ Destructor not compatible with threaded implementation
 	* [X] Implement a mutual-exclusion mechanism to avoid access violations
-- [ ] Send sensors' data via MQTT using topics to distribute data into different channels
+- [x] Send sensors' data via MQTT using topics to distribute data into different channels
 - [x] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
-- [ ] Topics should accomplish with the following template:
-	* [ ] ```METEO/<stationNumber>/Data/<sensor>```
-	* [ ] Valid ```<stationNumber>``` (identifiers) are integers from 0 to N-1
-	* [ ] Valid ```<sensor>``` values are:
-		- [ ] Temperature (Environmental temperature) [temp]
-		- [ ] Humidity (Relative humidity) [hum]
-		- [ ] Pressure (Local atmospheric pressure) [pres]
-		- [ ] Light (Incident light measurement) [light]
+- [x] Topics should accomplish with the following template:
+	* [x] ```METEO/<stationNumber>/Data/<sensor>```
+	* [x] Valid ```<stationNumber>``` (identifiers) are integers from 0 to N-1
+	* [x] Valid ```<sensor>``` values are:
+		- [x] Temperature (Environmental temperature) [temp]
+		- [x] Humidity (Relative humidity) [hum]
+		- [x] Pressure (Local atmospheric pressure) [pres]
+		- [x] Light (Incident light measurement) [light]
 		- [ ] AirQuality (Air quality as pollution measurement) [airQ]
 		- [ ] PPM (Raw particle count) [ppm]
 - [x] A special topic may be used to set/get the sampling period dymanically
