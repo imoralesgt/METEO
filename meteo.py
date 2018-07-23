@@ -86,7 +86,7 @@ class Mutex(object):
 		self.__locked = True
 		if self.__autoExec: # IRM Should I run something while locked?
 			# IRM A tuple to represent (method, (parameters)) in queue
-			self.executionQueue.append((method, parameters))
+			self.executionQueue.append([method, parameters])
 
 			# IRM Check whether resource is busy or not and return the
 			# result of executing the queued method
@@ -96,9 +96,16 @@ class Mutex(object):
 	def unlock(self):
 		if not self.__autoExec:
 			self.__locked = False
+			return True
+		else:
+			return None
 
+	# IRM Only should be invoked by user if AutoExec is disabled!
 	def isMutexLocked(self):
-		return self.__locked
+		if not self.__autoExec:
+			return self.__locked
+		else:
+			return None
 
 	def getAutoExec(self):
 		return self.__autoExec
@@ -145,9 +152,9 @@ class Meteo(object):
 		self.ERRORS = ERRORS
 		self.setStationNumber(STATION_NUMBER)
 
-		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
-		self.__initMQTTClient()
-		
+		# IRM Mutexes to avoid multiple access tries from different threads
+		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
+		#self.bh1750Mutex = Mutex(autoExec = False)
 
 		self.bme = BME680.BME680_METEO()
 		self.bh  = BH1750.BH1750_METEO()
@@ -155,9 +162,24 @@ class Meteo(object):
 		self.bme.bmeInit()
 		self.bh.initBH1750()
 
-		# IRM Mutexes to avoid multiple access tries from different threads
-		self.bme680Mutex = Mutex(autoExec = False) 
-		#self.bh1750Mutex = Mutex(autoExec = False)
+		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
+		self.__initMQTTClient()
+		
+
+	'''
+	=======================================================
+	IRM Object destructor
+	=======================================================
+	'''
+	def __del__(self):
+
+		#IRM Kill running threads
+		for i in self.samplingThread:
+			if i.isAlive():
+				if self.DEBUG:
+					print 'Killing ' + i.getName()
+				del i
+
 		
 
 	'''
@@ -281,10 +303,15 @@ class Meteo(object):
 		mqttQueueSupervisorThread = threading.Thread(target = self.__mqttMsgQueueSupervisor)
 		mqttQueueSupervisorThread.start()
 
-		# IRM Launch periodic sampling of connected sensors
-		for i in self.SENSOR_NAMES:
-			samplingThread = threading.Thread(target = self.periodicSampler, args = [i], name = str(i) + ' periodic sampler')
+		self.samplingThread = range(len(self.SENSOR_NAMES))
 
+		# IRM Launch periodic sampling of connected sensors
+		for i in range(len(self.SENSOR_NAMES)):
+		#for i in [TEMP]:
+			sensor = self.SENSOR_NAMES[i]
+			self.samplingThread[i] = threading.Thread(target = self.periodicSampler, args = [sensor], name = str(sensor) + ' periodic sampler')
+			self.samplingThread[i].setDaemon(True)
+			self.samplingThread[i].start()
 			if self.DEBUG:
 				print 'Launching thread: ' + str(i)
 
@@ -336,8 +363,14 @@ class Meteo(object):
 
 	# IRM Publish formatted sensor data to MQTT Topic
 	def __mqttPublishSensorValue(self, sensorName, value):
-		topic = ROOT_TOPIC + '/' + self.getStationNumber() + '/' + DATA_TOPIC + '/' + SENSOR_TOPICS[sensorName]
-		self.__mqttPublish(topic, value)
+		topic = ROOT_TOPIC + '/' + str(self.getStationNumber()) + '/' + DATA_TOPIC + '/' + SENSOR_TOPICS[sensorName]
+
+
+		if self.DEBUG:
+			print '__mqttPublishSensorValue --- ' + str(topic) + ' : ' + str(value)
+
+		for i in value:
+			self.__mqttPublish(topic, i)
 
 
 
@@ -452,13 +485,8 @@ class Meteo(object):
 
 
 				if sensorName == TEMP:
-					while self.bme680Mutex.isMutexLocked():
-						pass
-					self.bme680Mutex.lock()
+					sample = self.bme680Mutex.lock(self.bme.sampleTemperature, [])
 
-					sample = self.bme.sampleTemperature()
-
-					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -466,13 +494,8 @@ class Meteo(object):
 
 
 				elif sensorName == HUM:
-					while self.bme680Mutex.isMutexLocked():
-						pass
-					self.bme680Mutex.lock()
+					sample = self.bme680Mutex.lock(self.bme.sampleHumidity, [])
 
-					sample = self.bme.sampleHumidity()
-
-					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -480,13 +503,8 @@ class Meteo(object):
 
 
 				elif sensorName == PRES:
-					while self.bme680Mutex.isMutexLocked():
-						pass
-					self.bme680Mutex.lock()
+					sample = self.bme680Mutex.lock(self.bme.samplePressure, [])
 
-					sample = self.bme.samplePressure()
-
-					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -494,13 +512,8 @@ class Meteo(object):
 
 
 				elif sensorName == AIR_Q:
-					while self.bme680Mutex.isMutexLocked():
-						pass
-					self.bme680Mutex.lock()
+					sample = self.bme680Mutex.lock(self.bme.sampleAirQuality, [])
 
-					sample = self.bme.sampleAirQuality()
-
-					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -508,13 +521,8 @@ class Meteo(object):
 
 
 				elif sensorName == PPM:
-					while self.bme680Mutex.isMutexLocked():
-						pass
-					self.bme680Mutex.lock()
+					sample = self.bme680Mutex.lock(self.bme.samplePPM, [])
 
-					sample = self.bme.samplePPM()
-
-					self.bme680Mutex.unlock()
 					if sample is not False:
 						return (True, [sample])
 					else:
@@ -554,7 +562,12 @@ class Meteo(object):
 
 
 def meteoTestBench():
-	myMeteo = Meteo(True) # IRM Enable Debugging
+	try:
+		#myMeteo = Meteo(True) # IRM Enable Debugging
+		myMeteo = Meteo(True) # IRM Debugging disabled
+	except KeyboardInterrupt:
+		print 'Killing Meteo!'
+		del myMeteo
 
 	# IRM Playing out with sampling rate values
 	#print myMeteo.getSensorNames()
@@ -689,6 +702,6 @@ def mutexAndThreadsTestBench():
 
 
 if __name__ == '__main__':
-	meteoTestBench()
+	meteoTestBench()	
 	#mutexTestBench()
 	#mutexAndThreadsTestBench()
