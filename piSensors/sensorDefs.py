@@ -15,6 +15,15 @@ GAS_BASELINE_MEASUREMENTS = 50 #IRM How many gas sensor measurements should be u
 HUM_BASELINE = 40 #IRM Optimal indoor relative humidity percentage (default: 40%)
 
 
+IAQ_MAX_GAS = 250000 # IRM Max gas resistance measurement
+IAQ_MIN_GAS = 50    # IRM Min gas resistance measurement
+IAQ_MIN_HUM = 0     # IRM Min relative humidity
+IAQ_MAX_HUM = 100   # IRM Max relative humidity
+
+GAS_OPTIMAL = IAQ_MAX_GAS
+
+IAQ_HUM_CONTRIBUTION = 0.25 # IRM Humidity contribution to Index of Air Quality
+IAQ_GAS_CONTRIBUTION = 1 - IAQ_HUM_CONTRIBUTION # IRM Gas contribution to Index of Air Quality
 
 '''
 =======================================================

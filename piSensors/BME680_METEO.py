@@ -33,6 +33,17 @@ class BME680_METEO(object):
 	__GAS_HEATER_DURATION    = GAS_HEATER_DURATION
 	__GAS_HEATER_PROFILE     = GAS_HEATER_PROFILE
 
+	#IRM IAQ-related constants
+	__IAQ_MAX_GAS = IAQ_MAX_GAS # IRM Max gas resistance value
+	__IAQ_MIN_GAS = IAQ_MIN_GAS # IRM Min gas resistance value
+	__IAQ_MIN_HUM = IAQ_MIN_HUM # IRM Min relative humidity
+	__IAQ_MAX_HUM = IAQ_MAX_HUM # IRM Max relative humidity
+	__IAQ_OPT_HUM = HUM_BASELINE # IRM Optimal relative humidity
+	__IAQ_OPT_GAS = GAS_OPTIMAL  # IRM Optimza gas resistance
+
+	__IAQ_HUM_CONTRIBUTION = IAQ_HUM_CONTRIBUTION
+	__IAQ_GAS_CONTRIBUTION = IAQ_GAS_CONTRIBUTION
+
 
 
 	'''
@@ -126,7 +137,7 @@ class BME680_METEO(object):
 
 				if self.__DEBUG:
 					print 'Gas sensor burn-in process running... (' \
-					 + str(int(currentTime - startTime)) + ' out of ' + str(burnInTime) + ' seconds passed'
+					 + str(int(currentTime - startTime)) + ' out of ' + str(burnInTime) + ' seconds passed)'
 
 		#IRM After burn-in time has been reached, set 'gasReadable' as True
 		if self.__DEBUG:
@@ -231,35 +242,89 @@ class BME680_METEO(object):
 		sample = self.getSensorData(temp = True)
 		if self.__temp in sample:
 			return sample[self.__temp]
-		else:
-			return False
+		return False
 
 	def sampleHumidity(self):
 		sample = self.getSensorData(hum = True)
 		if self.__hum in sample:
 			return sample[self.__hum]
-		else:
-			return False
+		return False
 
 	def samplePressure(self):
 		sample = self.getSensorData(pres = True)
 		if self.__pres in sample:
 			return sample[self.__pres]
-		else:
-			return False
+		return False
 
 	def sampleAirQuality(self):
 		sample = self.getSensorData(hum = True, gas = True)
 		# IRM ToDo: Compute Air Quality (%) using Humidity and Gas measurements ===========================
+		if self.__hum in sample and self.__gas in sample and sample[self.__gas] is not False: #IRM If gas burn-in time has ended
+			return self.computeIAQ(sample[self.__hum], sample[self.__gas], temp = False)
 		return False
 
 	def samplePPM(self):
 		sample = self.getSensorData(gas = True)
 		gasBaseLine = self.getBaseLineValue()
 		#IRM ToDo: Compute PPM using Gas Baseline and Gas measurements ====================================
+		if self.__gas in sample and sample[self.__gas] is not False:
+			# IRM At the moment, using PPM as raw gas resistance measurement for debugging purposes
+			return sample[self.__gas]
 		return False
 
+	# IRM Arduino-like implementation of MAP function
+	def map(self, x, iL, iH, oL, oH):
+		return (x - iL) * (oH - oL) / float(iH - iL) + oL
 
+
+	# IRM Compute Index of Air Quality based on raw measurements (humidity, gas resistance and optionally temperature)
+	def computeIAQ(self, hum, gas, temp = False):
+		humContrib = self.__IAQ_HUM_CONTRIBUTION
+		gasContrib = self.__IAQ_GAS_CONTRIBUTION
+
+		optimalHum = self.__IAQ_OPT_HUM
+		optimalGas = self.__IAQ_OPT_GAS
+
+		minHum = self.__IAQ_MIN_HUM
+		minGas = self.__IAQ_MIN_GAS
+
+		maxHum = self.__IAQ_MAX_HUM
+		maxGas = self.__IAQ_MAX_GAS
+
+		if self.__DEBUG:
+			print 'IAQ Computation'
+			print 'Humidity       (0% - 100%) ------ ' + str(hum)
+			print 'Gas Resistance (50R - 50000R) --- ' + str(gas)
+
+		# IRM Humidity contribution computation
+		if hum < optimalHum: # IRM If humidity is less than 40%
+			humContrib = humContrib * (1 - (optimalHum - hum) / float(optimalHum))
+		else: 
+			humContrib = humContrib * (1 -  (hum - optimalHum) / float(maxHum - optimalHum))
+
+		if self.__DEBUG:
+			print 'Humidity contribution: ' + str(humContrib)
+
+		if gas < minGas:
+			gas = minGas
+
+		if gas > maxGas:
+			gas = maxGas
+
+		# IRM Gas resistance computation
+		gasContrib = (self.map(gas, minGas, maxGas, 0, 1)) * gasContrib
+
+		if self.__DEBUG:
+			print 'Gas resistance contribution: ' + str(gasContrib)
+
+		if(temp is not False): # IRM if temperature is required for computation
+			pass # IRM Not implemented yet
+
+		iaq = humContrib + gasContrib
+		iaq = 500.0 * (1 - iaq) # IRM IAQ Computation in a 0 to 500 basis. 0 is the best
+		iaq = int(iaq)
+
+		return iaq
 
 
 
