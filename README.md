@@ -45,3 +45,14 @@
 ## BME680_METEO
 - [ ] Compute Air Quality (%) using Humidity and Gas measurements
 - [ ] Compute PPM using Gas Baseline and Gas measurements
+
+## User Interaction
+- [ ] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
+- [ ] Add a push-button input to hard-reset the server via a separate thread if anything fails (using RPI-GPIO)
+
+## Data management
+- [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
+- [ ] Store the processed data into a database (CSV files?)
+
+# User interface
+- [ ] Node-red User Interface
