@@ -156,7 +156,7 @@ class Meteo(object):
 		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
 		#self.bh1750Mutex = Mutex(autoExec = False)
 
-		self.bme = BME680.BME680_METEO()
+		self.bme = BME680.BME680_METEO(DEBUG = False)
 		self.bh  = BH1750.BH1750_METEO()
 
 		self.bme.bmeInit()
@@ -563,8 +563,8 @@ class Meteo(object):
 
 def meteoTestBench():
 	try:
-		#myMeteo = Meteo(True) # IRM Enable Debugging
-		myMeteo = Meteo(True) # IRM Debugging disabled
+		myMeteo = Meteo(True) # IRM Enable Debugging
+		#myMeteo = Meteo(True) # IRM Debugging disabled
 	except KeyboardInterrupt:
 		print 'Killing Meteo!'
 		del myMeteo
