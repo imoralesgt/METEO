@@ -16,7 +16,7 @@
 		- [x] Front-end interface variables (i.e. Air Quality, instead of Humidity+Gas_Resistance)
 	- [x] Create a thread/method to periodically launch the one-shot sampling method
 	* [x] Generate as many threads running this method as required
-	* ~~[ ] Kill sampling threads during object destruction~~ Destructor not compatible with threaded implementation
+	* [ ] ~~Kill sampling threads during object destruction~~ Destructor not compatible with threaded implementation
 	* [X] Implement a mutual-exclusion mechanism to avoid access violations
 - [x] Send sensors' data via MQTT using topics to distribute data into different channels
 - [x] Each "METEO" station MUST have a vaild (integer type) identifier, starting from 0
@@ -28,8 +28,8 @@
 		- [x] Humidity (Relative humidity) [hum]
 		- [x] Pressure (Local atmospheric pressure) [pres]
 		- [x] Light (Incident light measurement) [light]
-		- [ ] AirQuality (Air quality as pollution measurement) [airQ]
-		- [ ] PPM (Raw particle count) [ppm]
+		- [x] AirQuality (Air quality as pollution measurement) [airQ]
+		- [ ] ~~PPM (Raw particle count) [ppm]~~ PPM is irrelevant. Instead, PPM field used to transmit raw gas resistance value
 - [x] A special topic may be used to set/get the sampling period dymanically
 	* [x] ```METEO/<stationNumber>/Settings/SamplingRate/<sensor>```
 	* [x] ```<sensor>``` field (sub-topic) is the same as described before
@@ -43,8 +43,8 @@
 	* [x] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
 		
 ## BME680_METEO
-- [ ] Compute Air Quality (%) using Humidity and Gas measurements
-- [ ] Compute PPM using Gas Baseline and Gas measurements
+- [x] Compute Air Quality (%) using Humidity and Gas measurements
+- [ ] ~~Compute PPM using Gas Baseline and Gas measurements~~ Not a requirement. Discarded from further releases.
 
 ## User Interaction
 - [ ] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
