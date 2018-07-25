@@ -37,6 +37,11 @@
 		- [x] Min sampling rate 1 minute
 		- [x] Max sampling rate 120 minutes
 		- [x] If a sampling rate (SR) out of these limits is set, a default value will be chosen if a prior valid SR wasn't set yet; otherwise, the last valid SR will remain active
+- [ ] \(Optional) _A special topic may be used to remotely reboot the device if no Alive beacons have been received_
+	- [ ] _```METEO/<stationNumber>/Setiings/Reboot```_
+	- [ ] _A unique key must be sent as password (through ```Reboot``` topic) to force a reboot_
+	- [ ] _Key will be ```stationNumber```-dependent and time-dependent (unix format) hash_
+	- [ ] _Hash must be computed by UI_
 - [x] A special topic may be used to announce "I'm Alive" messages from stations to broker
 	* [x] Invoke it via a separate thread as it may behave as a locking method
 	* [x] ```METEO/Alive```
@@ -47,7 +52,7 @@
 - [ ] ~~Compute PPM using Gas Baseline and Gas measurements~~ Not a requirement. Discarded from further releases.
 
 ## User Interaction
-- [ ] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
+- [x] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
 - [ ] Add a push-button input to hard-reset the server via a separate thread if anything fails (using RPI-GPIO)
 
 ## Data management
