@@ -18,6 +18,8 @@ import piSensors.BME680_METEO as BME680
 import piSensors.BH1750_METEO as BH1750
 from defs import * #IRM Global definitions, such as a C Header Definitions File
 
+from ui import UI_METEO as ui # IRM LED and Push-Button interface
+
 
 '''
 TODO list: check readme at github repo (https://github.com/imoralesgt/METEO)
@@ -141,6 +143,7 @@ class Meteo(object):
 
 
 
+
 	'''
 	=======================================================
 	IRM Object constructor
@@ -162,6 +165,8 @@ class Meteo(object):
 		self.bme.bmeInit()
 		self.bh.initBH1750()
 
+		self.__ui = ui() # IRM Hardware-related user interface (LED and Push-Button)
+
 		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
 		self.__initMQTTClient()
 		
@@ -179,6 +184,10 @@ class Meteo(object):
 				if self.DEBUG:
 					print 'Killing ' + i.getName()
 				del i
+
+		# IRM Turn LED off to show service was killed
+		self.__ui.output(self.__ui.led, 0)
+		del self.__ui
 
 		
 
@@ -314,6 +323,9 @@ class Meteo(object):
 			self.samplingThread[i].start()
 			if self.DEBUG:
 				print 'Launching thread: ' + str(i)
+
+		# IRM Turn LED on to show MQTT was successful
+		self.__ui.output(self.__ui.led, 1)
 
 		if self.DEBUG:
 			print 'Connected! rc: ' + str(rc)
