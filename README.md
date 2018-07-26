@@ -53,7 +53,10 @@
 
 ## User Interaction
 - [x] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
-- [ ] Add a push-button input to hard-reset the server via a separate thread if anything fails (using RPI-GPIO)
+- [x] Add a push-button input to hard-reset the server via a separate thread if anything fails (using RPI-GPIO)
+- [x] Autorun on boot
+	- [x] ```sudo crontab -e```
+	- [x] ```@reboot python /home/pi/METEO/meteo.py &```
 
 ## Data management
 - [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
