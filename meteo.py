@@ -1,9 +1,11 @@
+#! /usr/bin/env python
+
 '''
 Third-party dependencies
 -----------------------------------------------
 	+ paho-mqtt (https://github.com/eclipse/paho.mqtt.python)
+	+ RPi.GPIO  (https://pypi.org/project/RPi.GPIO/)
 '''
-
 
 
 import paho.mqtt.client  as mqttClient
@@ -155,6 +157,11 @@ class Meteo(object):
 		self.ERRORS = ERRORS
 		self.setStationNumber(STATION_NUMBER)
 
+		self.__ui = ui() # IRM Hardware-related user interface (LED and Push-Button)
+		self.pushThread = threading.Thread(target = self.__ui.longPressReboot, args = [], name = 'PushCheckRebootThread')
+		self.pushThread.setDaemon(True)
+		self.pushThread.start()
+
 		# IRM Mutexes to avoid multiple access tries from different threads
 		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
 		#self.bh1750Mutex = Mutex(autoExec = False)
@@ -165,7 +172,7 @@ class Meteo(object):
 		self.bme.bmeInit()
 		self.bh.initBH1750()
 
-		self.__ui = ui() # IRM Hardware-related user interface (LED and Push-Button)
+		
 
 		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
 		self.__initMQTTClient()

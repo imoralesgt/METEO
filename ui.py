@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import os
 
 
 # IRM Physical User Interface
@@ -7,12 +8,15 @@ import time
 class UI_METEO(object):
 
 	gpio = GPIO
+	LONG_PRESS = 30
 
 	# IRM Setup GPIO directives
 	def __init__(self, ledPin = 11, pushPin = 7):
 
 		self.led  = ledPin
 		self.push = pushPin
+
+		self.ledState = 0
 
 		#IRM set pin numbering mode
 		self.gpio.setmode(self.gpio.BOARD)
@@ -33,9 +37,35 @@ class UI_METEO(object):
 
 	def output(self, outPin, value):
 		self.gpio.output(outPin, value)
+		if outPin == self.led:
+			self.ledState = value
 
 	def input(self, inPin):
 		return self.gpio.input(inPin)
+
+	def pushPressed(self):
+		return not self.gpio.input(self.push)
+
+	# IRM Blocking method. Must be called from a thread if non-blocking operation is desired
+	def longPressReboot(self):
+		while True:
+			ledInitialValue = self.ledState
+			push = self.pushPressed()
+			if(push):
+				startTime = time.time()
+				reboot = False
+				while push:
+					currentTime = time.time()
+					self.output(self.led, not self.ledState)
+					time.sleep(0.1)
+					if currentTime - startTime > self.LONG_PRESS and reboot == False:
+						#a = os.system('sudo echo "Rebooting now!"')
+						a = os.system('sudo reboot now')
+						reboot = True
+					push = self.pushPressed()
+				self.output(self.led, ledInitialValue)
+
+
 
 	# IRM Blocking method. Must be called from a thread if non-blocking operation is desired
 	def blink(self, outPin, period, runs = False):
@@ -61,11 +91,15 @@ def main():
 	print 'Starting UI Test - LED Blinking'
 	ui = UI_METEO()
 	x = bool(0)
-	for i in range(10):
+	for i in range(5):
 		ui.output(ui.led, x)
 		time.sleep(0.5)
 		x = not x
 	print 'UI Test Done! - LED Blinking'
+
+
+	ui.longPressReboot()
+
 
 
 
