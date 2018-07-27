@@ -54,13 +54,20 @@
 ## User Interaction
 - [x] Add an LED status indicator to show whether the server is running or not (using RPI-GPIO)
 - [x] Add a push-button input to hard-reset the server via a separate thread if anything fails (using RPI-GPIO)
-- [x] Autorun on boot
-	- [x] ```sudo crontab -e```
-	- [x] ```@reboot python /home/pi/METEO/meteo.py &```
+
 
 ## Data management
 - [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
 - [ ] Store the processed data into a database (CSV files?)
+
+## Reliability
+- [x] Autorun on boot
+	- [x] ```sudo crontab -e```
+	- [x] ```@reboot python /home/pi/METEO/meteo.py &```
+- [x] Software WDT
+	- [ ] Run a parallel process (subscribed to ```ALIVE``` topic) to check whether METEO is running or not
+	- [ ] Restart METEO process after 10 consecutive ```ALIVE``` periods with no answer
+	- [ ] Start WDT timer after the first ```ALIVE``` message
 
 # User interface
 - [ ] Node-red User Interface
