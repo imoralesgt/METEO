@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python
 
 '''
 Third-party dependencies
@@ -151,16 +151,17 @@ class Meteo(object):
 	IRM Object constructor
 	=======================================================
 	'''
-	def __init__(self, DEBUG = 0):
+	def __init__(self, wdt = True, DEBUG = 0):
 		self.__initSensorSR()
 		self.DEBUG = DEBUG
 		self.ERRORS = ERRORS
 		self.setStationNumber(STATION_NUMBER)
 
 		self.__ui = ui() # IRM Hardware-related user interface (LED and Push-Button)
-		self.pushThread = threading.Thread(target = self.__ui.longPressReboot, args = [], name = 'PushCheckRebootThread')
-		self.pushThread.setDaemon(True)
-		self.pushThread.start()
+		# self.pushThread = threading.Thread(target = self.__ui.longPressReboot, args = [], name = 'PushCheckRebootThread')
+		# self.pushThread.setDaemon(True)
+		# self.pushThread.start()
+		os.system('python ui.py &')
 
 		# IRM Mutexes to avoid multiple access tries from different threads
 		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
@@ -176,6 +177,10 @@ class Meteo(object):
 
 		self.__mqttRxMsgQueue = [] # IRM Incoming messages will be queued here
 		self.__initMQTTClient()
+
+
+		if wdt is not False:
+			self.__launchWDT()
 		
 
 	'''
@@ -226,6 +231,16 @@ class Meteo(object):
 		for i in sensorNames:
 			self.__SR[i] = self.__getDefaultSR()
 
+	def __launchWDT(self):
+		myNodeID = STATION_NUMBER
+		aliveBeaconPeriod = KEEP_ALIVE_BEACON_PERIOD
+		brokerAddr = MQTT_BROKER
+		brokerPort = MQTT_PORT
+
+		a = os.system('python wdt.py ' + str(myNodeID) + ' ' + str(aliveBeaconPeriod) + ' ' + str(brokerAddr) + ' ' + str(brokerPort))
+
+		if self.DEBUG:
+			print 'Launching WDT'
 
 
 	'''
@@ -468,32 +483,6 @@ class Meteo(object):
 			sleepInterval = self.getSRvalues()[sensorName]
 			time.sleep(sleepInterval)
 
-	'''
-	def sampleTempTest(mutex = True, threadNumber = 0):
-		if mutex:
-			while tempMutex.isMutexLocked():
-				pass
-			tempMutex.lock()
-			print 'Mutex Owned! Thread # ' + str(threadNumber)
-
-		temp = tempSensor.sampleSensor(TEMP)
-
-		if mutex:
-			tempMutex.unlock()
-			print 'Mutex Released! Thread # ' + str(threadNumber)
-
-		print 'Thread ' + str(threadNumber) + ' --- ',
-		if temp[0]:
-			print temp[1][0]
-		else:
-			print False
-
-		bme680Mutex = Mutex()
-		bh1750Mutex = Mutex()
-	'''
-
-
-
 
 	# IRM Sample a determined variable in one-shot mode
 	def sampleSensor(self, sensorName):
@@ -575,152 +564,15 @@ class Meteo(object):
 
 
 
-
-
-
-
-
 def meteoTestBench():
 	try:
 		myMeteo = Meteo(True) # IRM Enable Debugging
-		#myMeteo = Meteo(True) # IRM Debugging disabled
+		#myMeteo = Meteo(False) # IRM Debugging disabled
 	except KeyboardInterrupt:
 		print 'Killing Meteo!'
 		del myMeteo
 
-	# IRM Playing out with sampling rate values
-	#print myMeteo.getSensorNames()
-	#print myMeteo.getSRvalues()
-
-	#print myMeteo.setSR('temp', 500)
-	#print myMeteo.setSR('Temp', 600) # IRM Wrong value, should return an error code
-	#print myMeteo.setSR('airQ', 5*60)
-
-	#print myMeteo.getSRvalues()
-
-	#print myMeteo.sampleSensor(TEMP)
-	#print myMeteo.sampleSensor(LIGHT)
-	#print myMeteo.sampleSensor(PPM)
-	#print myMeteo.sampleSensor(AIR_Q)
-	#print myMeteo.sampleSensor(HUM)
-	
-
-
-
-def mutexTestBench(): # IRM Simple mutex tests without threads
-
-	myMeteo = Meteo(True)
-
-	bme180Mutex = Mutex()
-
-	print 'MUTEX running on AutoExec Mode'
-
-	temp = bme180Mutex.lock(myMeteo.sampleSensor, [TEMP])
-	if temp[0]:
-		print 'Temperature: ' + str(temp[1][0]) + ' Celsius'
-	else:
-		print '*Invalid temp: ERROR ' + str(temp[1][0])
-
-	hum  = bme180Mutex.lock(myMeteo.sampleSensor, [HUM])
-	if hum[0]:
-		print 'Humidity: ' + str(hum[1][0]) + '%'	
-	else:
-		print '*Invalid hum:  ERROR ' + str(temp[1][0])
-
-	airQ = bme180Mutex.lock(myMeteo.sampleSensor, [AIR_Q])
-	if airQ[0]:
-		print 'Air Quality: ' + str(airQ[1][0]) + '%'
-	else:
-		print '*Invalid AirQ:  ERROR ' + str(airQ[1][0])
-
-
-	print 'MUTEX running without AutoExec Mode'
-
-	bme180NoAutoExecMutex = Mutex(autoExec = False)
-	while(bme180NoAutoExecMutex.isMutexLocked()): # IRM Wait until mutex (and shared resource) is available
-		print 'Mutex Locked waiting until released'
-
-	bme180NoAutoExecMutex.lock()
-	temp = myMeteo.sampleSensor(TEMP)
-	if temp[0]:
-		print 'Temperature: ' + str(temp[1][0]) + ' Celsius'
-	else:
-		print '*Invalid temp: ERROR ' + str(temp[1][0])
-
-
-tempSensor    = Meteo()
-tempMutex     = Mutex(autoExec = False)
-tempMutexAuto = Mutex(autoExec = True)
-	
-def sampleTempTest(mutex = True, threadNumber = 0):
-	if mutex:
-		while tempMutex.isMutexLocked():
-			pass
-		tempMutex.lock()
-		print 'Mutex Owned! Thread # ' + str(threadNumber)
-
-	temp = tempSensor.sampleSensor(TEMP)
-
-	if mutex:
-		tempMutex.unlock()
-		print 'Mutex Released! Thread # ' + str(threadNumber)
-
-	print 'Thread ' + str(threadNumber) + ' --- ',
-	if temp[0]:
-		print temp[1][0]
-	else:
-		print False
-
-def sampleTempTestWithAutoExec(mutex = True, threadNumber = 0):
-	if mutex:
-		temp = tempMutexAuto.lock(tempSensor.sampleSensor, [TEMP])
-		print 'Mutex Owned! Thread # ' + str(threadNumber)
-
-	print 'Thread ' + str(threadNumber) + ' --- ',
-	if temp[0]:
-		print temp[1][0]
-	else:
-		print False	
-
-
-# IRM Using Threading native mutex mechanism (lock/unlock)
-tTempMutex = threading.Lock()
-def sampleTempTestThreadingLock(mutex = True, threadNumber = 0):
-	if mutex:
-		tTempMutex.acquire()
-		print 'Mutex Owned! Thread # ' + str(threadNumber)
-
-	temp = tempSensor.sampleSensor(TEMP)
-
-	if mutex:
-		tTempMutex.release()
-		print 'Mutex Released! Thread # ' + str(threadNumber)
-
-	print 'Thread ' + str(threadNumber) + ' --- ',
-	if temp[0]:
-		print temp[1][0]
-	else:
-		print False	
-
-
-def mutexAndThreadsTestBench():
-	MAX_TASKS = 20 # IRM Max simultaneous threads to run Temperature Measurement
-	MUTEX_ENABLED = True # IRM Enable/Disable to check Mutex functionality
-
-	for i in range(MAX_TASKS):
-		#tempMutexThread = threading.Thread(target = sampleTempTest, args = [True, i], name = 'Temp Sensor ' + str(i), )
-		tempMutexThread = threading.Thread(target = sampleTempTestWithAutoExec, args = [True, i], name = 'Temp Sensor ' + str(i), )
-		#tempMutexThread = threading.Thread(target = sampleTempTestThreadingLock, args = [True, i], name = 'Temp Sensor ' + str(i), )
-		#tempMutexThread.setDaemon(True)
-		tempMutexThread.start()
-	
-
-
-
-
-
 
 if __name__ == '__main__':
-	meteoTestBench()	
-	#mutexTestBench()
-	#mutexAndThreadsTestBench()
+	meteoTestBench()
+
