@@ -294,7 +294,7 @@ class BME680_METEO(object):
 		if self.__DEBUG:
 			print 'IAQ Computation'
 			print 'Humidity       (0% - 100%) ------ ' + str(hum)
-			print 'Gas Resistance (50R - 50000R) --- ' + str(gas)
+			print 'Gas Resistance (50R - 250000R) --- ' + str(gas)
 
 		# IRM Humidity contribution computation
 		if hum < optimalHum: # IRM If humidity is less than 40%
