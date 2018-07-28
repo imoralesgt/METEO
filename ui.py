@@ -20,6 +20,7 @@ class UI_METEO(object):
 
 		#IRM set pin numbering mode
 		self.gpio.setmode(self.gpio.BOARD)
+		self.gpio.setwarnings(False)
 
 
 
@@ -84,10 +85,7 @@ class UI_METEO(object):
 
 
 
-
-
-
-def main():
+def test():
 	print 'Starting UI Test - LED Blinking'
 	ui = UI_METEO()
 	x = bool(0)
@@ -97,14 +95,14 @@ def main():
 		x = not x
 	print 'UI Test Done! - LED Blinking'
 
-
 	ui.longPressReboot()
 
 
-
-
-
+def main():
+	ui = UI_METEO()
+	ui.longPressReboot()
 
 
 if __name__ == '__main__':
 	main()
+
