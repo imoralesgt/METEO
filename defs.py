@@ -1,6 +1,34 @@
 '''
 IRM General/Global project definitions
 '''
+
+
+
+'''
+Modify these values to setup your METEO client
+Don't modify a parameter if you don't know what it means
+'''
+STATION_NUMBER = 0 # METEO Station Number. If this is the main station. Default value is 0
+
+#Network-related settings
+MQTT_BROKER = '127.0.0.1' #MQTT broker address. If this is the main station. Default value is 'localhost' or '127.0.0.1'
+MQTT_PORT   = 1883 # IRM MQTT borker port. Default value is 1883
+
+
+#Sensors sampling rate limits
+MIN_SAMPLING_RATE     = 1   * 60 # 1 minute
+MAX_SAMPLING_RATE     = 120 * 60 # 2 hours
+DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 5 # 5 minutes
+
+
+'''
+Don't modify anything else below this line
+============================================================
+'''
+
+
+
+
 # IRM Software-level sensor names
 TEMP  = 'temp'
 HUM   = 'hum'
@@ -38,11 +66,9 @@ MQTT_MULTI_LEVEL  = '#'
 # IRM MQTT-related clients' settings
 IDENTIFIER_TOPIC_TYPE = int
 MAX_CLIENTS = 256
-STATION_NUMBER = 0 # IRM Change if this is not the main METEO station in the network
 
-# IRM Network-related settings
-MQTT_BROKER = '127.0.0.1' # IRM MQTT broker will always be running on localhost (at least for this version)
-MQTT_PORT   = 1883 # IRM MQTT borker port
+
+
 
 # IRM other MQTT-related defines
 KEEP_ALIVE_BEACON_PERIOD = 60 # IRM Send beacon every minute
@@ -51,9 +77,7 @@ MQTT_RX_QUEUE_SUPERVISE_PERIOD = 0.1 # IRM Check input queue every 100 ms
 '''
 IRM Other METEO settings
 '''
-MIN_SAMPLING_RATE     = 1   * 60 # IRM 1 minute
-MAX_SAMPLING_RATE     = 120 * 60 # IRM 2 hours
-DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 5 # IRM 5 minutes
+
 
 '''
 IRM Errors list
