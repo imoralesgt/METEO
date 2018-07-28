@@ -8,7 +8,7 @@ Third-party dependencies
 '''
 
 
-import paho.mqtt.client  as mqttClient
+import paho.mqtt.client as mqttClient
 
 
 import threading
