@@ -61,13 +61,16 @@
 - [ ] Store the processed data into a database (CSV files?)
 
 ## Reliability
+- [x] Run meteo.py as a standalone application
+	- [x] Set flag to meteo.py
+		- [x] ```chmod +x meteo.py```
 - [x] Autorun on boot
 	- [x] ```sudo crontab -e```
-	- [x] ```@reboot python /home/pi/METEO/meteo.py &```
+	- [x] ```@reboot /home/pi/METEO/meteo.py &```
 - [x] Software WDT
-	- [ ] Run a parallel process (subscribed to ```ALIVE``` topic) to check whether METEO is running or not
-	- [ ] Restart METEO process after 10 consecutive ```ALIVE``` periods with no answer
-	- [ ] Start WDT timer after the first ```ALIVE``` message
+	- [x] Run a parallel process (subscribed to ```ALIVE``` topic) to check whether METEO is running or not
+	- [x] Restart METEO process after 3 consecutive ```ALIVE``` periods with no answer
+	- [x] Start WDT timer after the first ```ALIVE``` message
 
 # User interface
 - [ ] Node-red User Interface
