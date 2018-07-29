@@ -67,10 +67,10 @@
 - [x] Autorun on boot
 	- [x] ```sudo crontab -e```
 	- [x] ```@reboot /home/pi/METEO/meteo.py &```
-- [x] Software WDT
+- [x] Software Watchdog Timer
 	- [x] Run a parallel process (subscribed to ```ALIVE``` topic) to check whether METEO is running or not
 	- [x] Restart METEO process after 3 consecutive ```ALIVE``` periods with no answer
-	- [x] Start WDT timer after the first ```ALIVE``` message
+	- [x] Start WDT timer after the first ```ALIVE``` message arrives
 
 # User interface
 - [ ] Node-red User Interface
