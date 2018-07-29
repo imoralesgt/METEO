@@ -46,7 +46,13 @@
 	* [x] Invoke it via a separate thread as it may behave as a locking method
 	* [x] ```METEO/Alive```
 	* [x] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
-		
+
+## Printed circuit board
+- [x] Design a PCB to place the sensor boards and the User-Interaction hardware (push-button + LED)
+	- [x] Design must be compatible with Raspberry PI 3 header footprint
+	- [x] Power must be supplied from Raspberry PI's 3v3/GND breakout pins
+	- [ ] Manufacture PCB and test functionality
+
 ## BME680_METEO
 - [x] Compute Air Quality (%) using Humidity and Gas measurements
 - [ ] ~~Compute PPM using Gas Baseline and Gas measurements~~ Not a requirement. Discarded from further releases.
