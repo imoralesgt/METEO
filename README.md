@@ -46,7 +46,13 @@
 	* [x] Invoke it via a separate thread as it may behave as a locking method
 	* [x] ```METEO/Alive```
 	* [x] Each station should publish a message containing only its ```<stationNumber>``` periodically (ie. every 1 minute)
-		
+
+## Printed circuit board
+- [x] Design a PCB to place the sensor boards and the User-Interaction hardware (push-button + LED)
+	- [x] Design must be compatible with Raspberry PI 3 header footprint
+	- [x] Power must be supplied from Raspberry PI's 3v3/GND breakout pins
+	- [ ] Manufacture PCB and test functionality
+
 ## BME680_METEO
 - [x] Compute Air Quality (%) using Humidity and Gas measurements
 - [ ] ~~Compute PPM using Gas Baseline and Gas measurements~~ Not a requirement. Discarded from further releases.
@@ -67,10 +73,10 @@
 - [x] Autorun on boot
 	- [x] ```sudo crontab -e```
 	- [x] ```@reboot /home/pi/METEO/meteo.py &```
-- [x] Software WDT
+- [x] Software Watchdog Timer
 	- [x] Run a parallel process (subscribed to ```ALIVE``` topic) to check whether METEO is running or not
 	- [x] Restart METEO process after 3 consecutive ```ALIVE``` periods with no answer
-	- [x] Start WDT timer after the first ```ALIVE``` message
+	- [x] Start WDT timer after the first ```ALIVE``` message arrives
 
 # User interface
 - [ ] Node-red User Interface
