@@ -65,6 +65,10 @@
 ## Data management
 - [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
 - [ ] Store the processed data into a database (CSV files?)
+- [ ] Retreive data from Broker and append it to CSV file (running in parallel thread?)
+- [ ] Create a new CSV file every day
+- [ ] If several measurements from different sensors retreived within the same MINUTE, store them in the same CSV row.
+- [ ] If several measurements form the same sensor retreived within the same MINUTE, average grabbed values and then store the last average computation.
 
 ## Reliability
 - [x] Run meteo.py as a standalone application
@@ -79,4 +83,4 @@
 	- [x] Start WDT timer after the first ```ALIVE``` message arrives
 
 # User interface
-- [ ] Node-red User Interface
+- [ ] Node-RED User Interface
