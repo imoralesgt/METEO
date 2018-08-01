@@ -70,7 +70,7 @@
 - [ ] If several measurements from different sensors retreived within the same MINUTE,
 	store them in the same CSV row.
 - [ ] If several measurements form the same sensor retreived within the same MINUTE,
-	average the value and then store it.
+	average grabbed values and then store the last average computation.
 
 ## Reliability
 - [x] Run meteo.py as a standalone application
