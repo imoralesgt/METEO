@@ -56,7 +56,7 @@ class WDT(object):
 			print 'Unknown error!'
 
 		mqttThread = threading.Thread(target = self.mqttC.loop_forever, args = [], name = 'MQTT Loop Thread')
-		mqttThread.setDaemon(True)
+		mqttThread.setDaemon(False)
 		mqttThread.start()
 
 
