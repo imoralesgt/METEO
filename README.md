@@ -65,6 +65,12 @@
 ## Data management
 - [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
 - [ ] Store the processed data into a database (CSV files?)
+- [ ] Retreive data from Broker and add it to CSV file (running in parallel thread?)
+- [ ] Create a new file every day
+- [ ] If several measurements from different sensors retreived within the same MINUTE,
+	store them in the same CSV row.
+- [ ] If several measurements form the same sensor retreived within the same MINUTE,
+	average the value and then store it.
 
 ## Reliability
 - [x] Run meteo.py as a standalone application
