@@ -5,8 +5,9 @@ IRM General/Global project definitions
 
 
 '''
+============================================================
 Modify these values to setup your METEO client
-Don't modify a parameter if you don't know what it means
+Don't modify any parameter if you don't know what it means
 '''
 STATION_NUMBER = 0 # METEO Station Number. If this is the main station. Default value is 0
 
@@ -55,6 +56,15 @@ SENSOR_TOPICS    = {TEMP : 'Temperature', HUM : 'Humidity', PRES : 'Pressure',
 					LIGHT : 'Light', AIR_Q : 'AirQuality', PPM : 'PPM'}
 SENSOR_TOPICS_R  = {'Temperature' : TEMP, 'Humidity' : HUM, 'Pressure' : PRES,
 					'Light' : LIGHT, 'AirQuality' : AIR_Q, 'PPM' : PPM}
+SENSOR_TOPICS_LST = (
+					SENSOR_TOPICS[TEMP],
+					SENSOR_TOPICS[HUM],
+					SENSOR_TOPICS[PRES],
+					SENSOR_TOPICS[LIGHT],
+					SENSOR_TOPICS[AIR_Q],
+					SENSOR_TOPICS[PPM]
+					)
+
 DATA_TOPIC       = 'Data'
 SETTINGS_TOPIC   = 'Settings'
 SR_TOPIC         = 'SamplingRate'
@@ -99,3 +109,11 @@ ERRORS = {
 		 INVALID_PRES_VALUE     : -7, INVALID_AIR_Q_VALUE : -8, 
 		 INVALID_PPM_VALUE      : -9
 		 }
+
+'''
+IRM Data storage settings
+'''
+METEO_DATA_FOLDER   = 'data'
+METEO_FILENAME_ROOT = 'METEO_'
+METEO_FILE_FORMAT   = '.csv'
+CSV_HEADER          = 'TimeStamp, METEO_ID, Temperature, Humidity, Pressure, Luminosity, Air Quality,'
