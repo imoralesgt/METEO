@@ -6,8 +6,175 @@ import paho.mqtt.client as mqttClient
 
 from defs import *
 
+#IRM Used to store data avoiding blank fields in csv registers
+#By default 1 minute window, otherwise some fields left in blank
+class StorageQueue(object):
+
+	DATE_FIELD  = 'date'
+	TIME_FIELD  = 'time'
+	NODE_FIELD  = 'node'
+	TEMP_FIELD  = TEMP
+	HUM_FIELD   = HUM
+	PRES_FIELD  = PRES
+	LIGHT_FIELD = LIGHT
+	AIR_Q_FIELD = AIR_Q
+
+	CSV_FIELDS = {
+					DATE_FIELD : 0, TIME_FIELD : 1,
+					NODE_FIELD : 2, TEMP_FIELD : 3,
+					HUM_FIELD  : 4, PRES_FIELD : 5,
+					LIGHT_FIELD: 6, AIR_Q_FIELD: 7
+				 }
+
+ 	SENSOR_IDX = {}
+
+
+	SENSORS_SHIFT = 3 #Shift between CSV register and Data register
+
+	DELTA_TIME = 60 #IRM Passed seconds before creating a new register
+	
+
+	# IRM A new instance must be created for each CSV file (every new day)
+	def __init__(self):
+		for i in self.CSV_FIELDS:
+			self.SENSOR_FIELDS[i] = self.CSV_FIELDS[i] - SENSORS_SHIFT
+			if self.SENSOR_FIELDS[i] < 0:
+				del self.SENSOR_FIELDS[i]
+
+		self.initialize()
+		
+
+	def initialize(self):
+		#Initialize queues
+
+		self.registerQueue = self.__resetRegisterQueue()
+
+		self.tempQueue = self.__resetQueue()
+		self.humQueue  = self.__resetQueue()
+		self.presQueue = self.__resetQueue()
+		self.lightQueue= self.__resetQueue()
+		self.airQQueue = self.__resetQueue()
+
+		self.listOfQueues = [self.tempQueue, self.humQueue, self.presQueue, self.lightQueue, self.airQQueue]
+
+
+		cnt = 0
+		self.whichQueue = {}
+		for i in self.SENSOR_FIELDS:
+			x = self.SENSOR_FIELDS[i]
+			self.whichQueue[cnt] = self.listOfQueues[x]
+
+		#IRM Last time data was received for each variable
+		self.lastTime = [False] * (self.CSV_FIELDS - self.SENSORS_SHIFT) 
+
+		#IRM Last time a register was available to be writen into CSV file
+		self.lastRegisterTime = False
+
+		#IRM Queue ready to be written into CSV file
+		self.queueReady = False
+
+		#IRM String-formatted queue
+		self.csvQueue = ''
+
+		
+
+	#IRM Create a clean register so data can be stored here
+	def __resetRegisterQueue(self, defaultValue = ''):
+		queue = []
+		for i in range(len(self.CSV_FIELDS)):
+			queue.append(defaultValue)
+		return queue
+
+	def __resetQueue(self):
+		return []
+
+	def __getUnixTime(self):
+		return time.time()
+
+	def __getLastTime(self, idx):
+		return self.lastTime[idx]
+
+
+	def __hasLastTime(self, index):
+		return self.lasTime[index] is not False
+
+	def __resetLastTime(self, index):
+		self.lastTime[index] = False
+
+	def __avg(self, queue): #IRM Average
+		a = 0
+		for i in queue:
+			a += i
+
+		return a/len(queue)
+
+	def __toRegisterQueue(self, index, queue):
+		if self.lastRegisterTime is False: #First row
+			self.lastRegisterTime = self.__getUnixTime()
+		elif (self.__getUnixTime() - self.lastRegisterTime < self.DELTA_TIME):
+			data = str(self.__avg(queue))
+			self.registerQueue[index] = data
+		else:
+			self.__writeToRegister(','.join(self.registerQueue))
+			self.lastRegisterTime = self.__getUnixTime()
+
+	def __writeToRegister(self, queueData):
+		# TODO: Append to CSV file here! (Open -> append -> close) File
+		self.csvQueue = ','.join(queueData) #Comma-separated values
+		self.queueReady = True
+
+	def __duplicateList(self, srcList):
+		dstList = []
+		for i in srcList:
+			dstList.append(i)
+		return dstList
+
+			
+
+	def appendValue(self, value, sensorIndex):
+
+		
+		'''
+		Example of usage (with humidity):
+
+		myStorageQueue = StorageQueue()
+		myStorageQueue.appendValue(myHumValue, myStorageQueue.HUM_FIELD)
+		'''
+
+		#idx = self.SENSOR_FIELDS[self.TEMP_FIELD] #IRM Temp index
+		idx = self.SENSOR_IDX[sensorIndex] #IRM Variable Index (TEMP_FIELD, HUM_FIELD, etc...)
+
+		queue = self.whichQueue[idx]
+
+		if self.__hasLastTime(idx):
+			if self.__getUnixTime() - self.__getLastTime(idx) < self.DELTA_TIME:
+				queue.append(float(value))
+			else:
+				self.__resetLastTime(idx)
+				self.__toRegisterQueue(self.CSV_FIELDS[idx + self.SENSORS_SHIFT], queue)
+		else:
+			self.queue = [value] #IRM Replace 'False' with first value
+
+
+
+	#IRM Return string-formatted register if ready. Otherwise, return False
+	def isQueueReady(self):
+		if self.queueReady:
+			newQueue = self.__duplicateList(self.csvQueue)
+			self.initialize()
+			return newQueue
+		else:
+			return False
+
+
+
+
+
+
+
 # IRM Storage will be operative only in main METEO Station (Station ID = 0)
 # Otherwise, won't be launched from main 'meteo.py'
+
 class Storage(object):
 
 	def __init__(self, DEBUG = 0):

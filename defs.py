@@ -43,6 +43,8 @@ SENSOR_BH1750 = 'BH1750'
 
 # IRM List of available sensors
 AVAILABLE_SENSORS = [TEMP, HUM, PRES, LIGHT, AIR_Q, PPM]
+
+# IRM Mapping measured variables to corresponding hardware sensors
 SENSORS_VAR_MAP   = {TEMP : SENSOR_BME680, HUM : SENSOR_BME680,
 					PRES : SENSOR_BME680, LIGHT : SENSOR_BH1750,
 					AIR_Q : SENSOR_BME680, PPM : SENSOR_BME680}
@@ -116,4 +118,5 @@ IRM Data storage settings
 METEO_DATA_FOLDER   = 'data'
 METEO_FILENAME_ROOT = 'METEO_'
 METEO_FILE_FORMAT   = '.csv'
-CSV_HEADER          = 'TimeStamp, METEO_ID, Temperature, Humidity, Pressure, Luminosity, Air Quality,'
+CSV_HEADER          = 'Date, Time, METEO_ID, Temperature, Humidity, Pressure, Luminosity, Air Quality,'
+
