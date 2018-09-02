@@ -9,10 +9,10 @@ IRM General/Global project definitions
 Modify these values to setup your METEO client
 Don't modify any parameter if you don't know what it means
 '''
-STATION_NUMBER = 0 # METEO Station Number. If this is the main station. Default value is 0
+STATION_NUMBER = 0 # METEO Station Number. If this is the main station, default value is 0
 
 #Network-related settings
-MQTT_BROKER = '127.0.0.1' #MQTT broker address. If this is the main station. Default value is 'localhost' or '127.0.0.1'
+MQTT_BROKER = '127.0.0.1' #MQTT broker address. If this is the main station, default value is 'localhost' or '127.0.0.1'
 MQTT_PORT   = 1883 # IRM MQTT borker port. Default value is 1883
 
 
@@ -63,8 +63,7 @@ SENSOR_TOPICS_LST = (
 					SENSOR_TOPICS[HUM],
 					SENSOR_TOPICS[PRES],
 					SENSOR_TOPICS[LIGHT],
-					SENSOR_TOPICS[AIR_Q],
-					SENSOR_TOPICS[PPM]
+					SENSOR_TOPICS[AIR_Q]
 					)
 
 DATA_TOPIC       = 'Data'

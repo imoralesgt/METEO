@@ -1,5 +1,6 @@
 import os
 import time
+import datetime
 import socket
 import threading
 import paho.mqtt.client as mqttClient
@@ -19,6 +20,7 @@ class StorageQueue(object):
 	LIGHT_FIELD = LIGHT
 	AIR_Q_FIELD = AIR_Q
 
+	#IRM CSV Fields Enum
 	CSV_FIELDS = {
 					DATE_FIELD : 0, TIME_FIELD : 1,
 					NODE_FIELD : 2, TEMP_FIELD : 3,
@@ -26,7 +28,11 @@ class StorageQueue(object):
 					LIGHT_FIELD: 6, AIR_Q_FIELD: 7
 				 }
 
- 	SENSOR_IDX = {}
+ 	SENSOR_IDX = {
+					TEMP_FIELD : 0,
+					HUM_FIELD  : 1, PRES_FIELD : 2,
+					LIGHT_FIELD: 3, AIR_Q_FIELD: 4
+				 }
 
 
 	SENSORS_SHIFT = 3 #Shift between CSV register and Data register
@@ -36,10 +42,11 @@ class StorageQueue(object):
 
 	# IRM A new instance must be created for each CSV file (every new day)
 	def __init__(self):
+		self.SENSOR_FIELDS = {}
 		for i in self.CSV_FIELDS:
-			self.SENSOR_FIELDS[i] = self.CSV_FIELDS[i] - SENSORS_SHIFT
-			if self.SENSOR_FIELDS[i] < 0:
-				del self.SENSOR_FIELDS[i]
+			tempField = self.CSV_FIELDS[i] - self.SENSORS_SHIFT
+			if tempField >= 0:
+				self.SENSOR_FIELDS[i] = tempField
 
 		self.initialize()
 		
@@ -60,12 +67,14 @@ class StorageQueue(object):
 
 		cnt = 0
 		self.whichQueue = {}
+
 		for i in self.SENSOR_FIELDS:
 			x = self.SENSOR_FIELDS[i]
 			self.whichQueue[cnt] = self.listOfQueues[x]
+			cnt += 1
 
 		#IRM Last time data was received for each variable
-		self.lastTime = [False] * (self.CSV_FIELDS - self.SENSORS_SHIFT) 
+		self.lastTime = [False] * (len(self.CSV_FIELDS) - self.SENSORS_SHIFT) 
 
 		#IRM Last time a register was available to be writen into CSV file
 		self.lastRegisterTime = False
@@ -94,9 +103,11 @@ class StorageQueue(object):
 	def __getLastTime(self, idx):
 		return self.lastTime[idx]
 
+	def __setLastTime(self, idx, time):
+		self.lastTime[idx] = time
 
 	def __hasLastTime(self, index):
-		return self.lasTime[index] is not False
+		return self.lastTime[index] is not False
 
 	def __resetLastTime(self, index):
 		self.lastTime[index] = False
@@ -112,16 +123,30 @@ class StorageQueue(object):
 		if self.lastRegisterTime is False: #First row
 			self.lastRegisterTime = self.__getUnixTime()
 		elif (self.__getUnixTime() - self.lastRegisterTime < self.DELTA_TIME):
-			data = str(self.__avg(queue))
-			self.registerQueue[index] = data
+			if len(queue) > 0:
+				data = str(self.__avg(queue))
+				self.registerQueue[index] = data
+				print '__toRegisterQueue: Averaging values before sending'
 		else:
-			self.__writeToRegister(','.join(self.registerQueue))
+			print '__toRegisterQueue: Writing to Register as 1 minute has passed by'
+			print '__toRegisterQueue: Register queue:  ' + str(self.registerQueue)
+			self.__writeToRegister(self.registerQueue)
 			self.lastRegisterTime = self.__getUnixTime()
+
 
 	def __writeToRegister(self, queueData):
 		# TODO: Append to CSV file here! (Open -> append -> close) File
+		queueData[0] = str(datetime.date.today())
+		queueData[1] = str(time.strftime('%H:%M'))
+		queueData[2] = str(0)
+
+		print 'Original Queue Data: ' + str(queueData)
+
 		self.csvQueue = ','.join(queueData) #Comma-separated values
 		self.queueReady = True
+
+		print 'Register written: ' + str(self.csvQueue)
+
 
 	def __duplicateList(self, srcList):
 		dstList = []
@@ -145,15 +170,21 @@ class StorageQueue(object):
 		idx = self.SENSOR_IDX[sensorIndex] #IRM Variable Index (TEMP_FIELD, HUM_FIELD, etc...)
 
 		queue = self.whichQueue[idx]
+		
 
 		if self.__hasLastTime(idx):
 			if self.__getUnixTime() - self.__getLastTime(idx) < self.DELTA_TIME:
+
+				print 'appendValue: Value appended to queue!'
 				queue.append(float(value))
 			else:
+				print 'appendValue: Now sending to Register Queue: ' + str(queue)
 				self.__resetLastTime(idx)
-				self.__toRegisterQueue(self.CSV_FIELDS[idx + self.SENSORS_SHIFT], queue)
+				self.__toRegisterQueue(idx + self.SENSORS_SHIFT, queue)
 		else:
+			print 'appendValue: New value in queue'
 			self.queue = [value] #IRM Replace 'False' with first value
+			self.__setLastTime(idx, self.__getUnixTime())
 
 
 
@@ -212,7 +243,7 @@ class Storage(object):
 			
 			self.mqttC.connect(self.serverIP, self.serverPort) #IRM Connect to broker to listen to data
 			if self.DEBUG:
-				print 'Connecting to Broker -> ' + self.serverIP + ':' + self.serverPort
+				print 'Connecting to Broker -> ' + self.serverIP + ':' + str(self.serverPort)
 
 
 		except socket.error:
@@ -221,12 +252,14 @@ class Storage(object):
 			os.system('sudo service mosquitto restart')
 			self.mqttC.reconnect()
 
-		except:
-			print 'Unknown error!'
+		except Exception as e:
+			print 'Error: ' + str(e)
 
 		mqttThread = threading.Thread(target = self.mqttC.loop_forever, args = [], name = 'MQTT Loop Thread')
 		mqttThread.setDaemon(False)
 		mqttThread.start()
+
+		self.stQueue = StorageQueue()
 
 
 	def __getMyID(self):
@@ -273,8 +306,9 @@ class Storage(object):
 
 		if self.__praseAndStoreData(msg.topic, msg.payload):
 			if self.DEBUG:
-				print 'Succesfully stored data'
-			else:
+				print 'Succesfully sent to storage queue'
+		else:
+			if self.DEBUG:
 				print 'Could not store data'
 
 
@@ -335,7 +369,11 @@ class Storage(object):
 		except TypeError:
 			if self.DEBUG:
 				print 'Invalid station number: ' + str(topic[1])
-				return False
+			return False
+		except Exception as e:
+			if self.DEBUG:
+				print 'Exception: ' + str(e)
+			return False
 
 		sensorName = str(topic[-1])
 		if self.DEBUG:
@@ -346,7 +384,9 @@ class Storage(object):
 				print 'Sensor name not in sensor topics list: ' + str(SENSOR_TOPICS_LST)
 			return False
 
-
+		#IRM Send to storage queue (stQueue)
+		self.stQueue.appendValue(payload, SENSOR_TOPICS_R[sensorName])
+		return True
 
 
 	'''
