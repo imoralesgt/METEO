@@ -566,8 +566,8 @@ class Meteo(object):
 
 def meteoTestBench():
 	try:
-		myMeteo = Meteo(True) # IRM Enable Debugging
-		#myMeteo = Meteo(False) # IRM Debugging disabled
+		#myMeteo = Meteo(True) # IRM Enable Debugging
+		myMeteo = Meteo(False) # IRM Debugging disabled
 	except KeyboardInterrupt:
 		print 'Killing Meteo!'
 		del myMeteo

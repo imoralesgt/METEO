@@ -147,6 +147,8 @@ class StorageQueue(object):
 
 		print 'Register written: ' + str(self.csvQueue)
 
+		#self.initialize()
+
 
 	def __duplicateList(self, srcList):
 		dstList = []
@@ -176,15 +178,23 @@ class StorageQueue(object):
 			if self.__getUnixTime() - self.__getLastTime(idx) < self.DELTA_TIME:
 
 				print 'appendValue: Value appended to queue!'
-				queue.append(float(value))
+				self.whichQueue[idx].append(float(value))
+				print 'appendValue: Current queue: ' + str(self.whichQueue[idx])
 			else:
-				print 'appendValue: Now sending to Register Queue: ' + str(queue)
+				print 'appendValue: Now sending to Register Queue: ' + str(self.whichQueue[idx])
 				self.__resetLastTime(idx)
-				self.__toRegisterQueue(idx + self.SENSORS_SHIFT, queue)
+				self.__toRegisterQueue(idx + self.SENSORS_SHIFT, self.whichQueue[idx])
+
+				#IRM Clean current queue
+				#self.whichQueue[idx] = self.__resetQueue()
 		else:
 			print 'appendValue: New value in queue'
-			self.queue = [value] #IRM Replace 'False' with first value
+			try:
+				self.whichQueue[idx] = [float(value)] #IRM Replace 'False' with first value
+			except Except as e:
+				print 'appendValue: Exception ' + str(e)
 			self.__setLastTime(idx, self.__getUnixTime())
+			print 'appendValue: Current queue ' + str(self.whichQueue[idx])
 
 
 
