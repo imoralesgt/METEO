@@ -122,7 +122,9 @@ class StorageQueue(object):
 	def __toRegisterQueue(self, index, queue):
 		if self.lastRegisterTime is False: #First row
 			self.lastRegisterTime = self.__getUnixTime()
-		elif (self.__getUnixTime() - self.lastRegisterTime < self.DELTA_TIME):
+		
+
+		if (self.__getUnixTime() - self.lastRegisterTime < self.DELTA_TIME):
 			if len(queue) > 0:
 				data = str(self.__avg(queue))
 				self.registerQueue[index] = data
@@ -132,6 +134,9 @@ class StorageQueue(object):
 			print '__toRegisterQueue: Register queue:  ' + str(self.registerQueue)
 			self.__writeToRegister(self.registerQueue)
 			self.lastRegisterTime = self.__getUnixTime()
+
+
+			
 
 
 	def __writeToRegister(self, queueData):
@@ -171,7 +176,7 @@ class StorageQueue(object):
 		#idx = self.SENSOR_FIELDS[self.TEMP_FIELD] #IRM Temp index
 		idx = self.SENSOR_IDX[sensorIndex] #IRM Variable Index (TEMP_FIELD, HUM_FIELD, etc...)
 
-		queue = self.whichQueue[idx]
+		#queue = self.whichQueue[idx]
 		
 
 		if self.__hasLastTime(idx):
@@ -182,8 +187,8 @@ class StorageQueue(object):
 				print 'appendValue: Current queue: ' + str(self.whichQueue[idx])
 			else:
 				print 'appendValue: Now sending to Register Queue: ' + str(self.whichQueue[idx])
-				self.__resetLastTime(idx)
 				self.__toRegisterQueue(idx + self.SENSORS_SHIFT, self.whichQueue[idx])
+				self.__resetLastTime(idx)
 
 				#IRM Clean current queue
 				#self.whichQueue[idx] = self.__resetQueue()
@@ -194,6 +199,11 @@ class StorageQueue(object):
 			except Except as e:
 				print 'appendValue: Exception ' + str(e)
 			self.__setLastTime(idx, self.__getUnixTime())
+
+
+			self.__toRegisterQueue(idx + self.SENSORS_SHIFT, self.whichQueue[idx])
+
+
 			print 'appendValue: Current queue ' + str(self.whichQueue[idx])
 
 
