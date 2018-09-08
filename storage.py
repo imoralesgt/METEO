@@ -5,6 +5,8 @@ import socket
 import threading
 import paho.mqtt.client as mqttClient
 
+import sqlite3
+
 from defs import *
 
 #IRM Used to store data avoiding blank fields in csv registers
@@ -35,6 +37,7 @@ class StorageQueue(object):
 				 }
 
 
+
 	SENSORS_SHIFT = 3 #Shift between CSV register and Data register
 
 	DELTA_TIME = 60 #IRM Passed seconds before creating a new register
@@ -49,7 +52,7 @@ class StorageQueue(object):
 				self.SENSOR_FIELDS[i] = tempField
 
 		self.initialize()
-		
+	
 
 	def initialize(self):
 		#Initialize queues
@@ -152,6 +155,9 @@ class StorageQueue(object):
 
 		print 'Register written: ' + str(self.csvQueue)
 
+		self.dbCommit(queueData)
+		print '__writeToRegister: Data commited into Database'
+
 		#self.initialize()
 
 
@@ -218,6 +224,31 @@ class StorageQueue(object):
 			return False
 
 
+	#IRM SQLITE3 Database data commit
+	def dbCommit(self, data): 
+		self.dbFileName  = DB_FILE_NAME
+		self.dbTableName = DB_TABLE_NAME
+		#self.DB_TABLE_FIELDS = DB_TABLE_FIELDS
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+
+		#IRM Data parameter must be a tuple/list container with
+		#sorted data according to DB's table data fields
+		sqlQuery = "INSERT INTO " + str(self.dbTableName) + " values " + str(tuple(data))
+
+		dbCursor.execute(sqlQuery)
+		dbConnector.commit()
+		dbConnector.close()
+
+		self.dbExportToCSV()
+
+	def dbExportToCSV(self):
+		dbFileName  = self.dbFileName
+		dbTableName = self.dbTableName
+		dbExpExtension = METEO_FILE_FORMAT
+		command = 'sqlite3 -header -csv ' + str(dbFileName) + ' "select * from ' + str(dbTableName) + ';" > ' + str(dbTableName) + str(dbExpExtension)
+		os.system(command)
+
 
 
 
@@ -245,6 +276,7 @@ class Storage(object):
 		self.METEO_FILENAME_ROOT = METEO_FILENAME_ROOT
 		self.METEO_FILE_FORMAT   = METEO_FILE_FORMAT
 		self.METEO_DATA_FOLDER   = METEO_DATA_FOLDER
+
 
 		self.DEBUG = DEBUG
 

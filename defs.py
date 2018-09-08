@@ -118,4 +118,7 @@ METEO_DATA_FOLDER   = 'data'
 METEO_FILENAME_ROOT = 'METEO_'
 METEO_FILE_FORMAT   = '.csv'
 CSV_HEADER          = 'Date, Time, METEO_ID, Temperature, Humidity, Pressure, Luminosity, Air Quality,'
-
+DB_FILE_NAME		= 'meteo.db'
+DB_TABLE_NAME	    = 'meteo'
+DB_TABLE_FIELDS     = ('Date', 'Time', 'Node', SENSOR_TOPICS[TEMP], SENSOR_TOPICS[HUM],
+						 SENSOR_TOPICS[PRES], SENSOR_TOPICS[LIGHT], SENSOR_TOPICS[AIR_Q] )
