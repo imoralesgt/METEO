@@ -88,6 +88,9 @@ class StorageQueue(object):
 		#IRM String-formatted queue
 		self.csvQueue = ''
 
+		#IRM SQLite DB Init
+		self.dbInit()
+
 		
 
 	#IRM Create a clean register so data can be stored here
@@ -223,11 +226,18 @@ class StorageQueue(object):
 		else:
 			return False
 
+	def dbInit(self):
+		self.dbFileName  = DB_FILE_NAME
+		self.dbTableName = DB_TABLE_NAME
+		self.dbNDays     = DB_N_DAYS
+
+		#print str(self.dbSelectQuery('Date'))
+		#self.dbFindNDaysRegisters()
+		#self.deleteFirstNRegisters(10)
+
 
 	#IRM SQLITE3 Database data commit
 	def dbCommit(self, data): 
-		self.dbFileName  = DB_FILE_NAME
-		self.dbTableName = DB_TABLE_NAME
 		#self.DB_TABLE_FIELDS = DB_TABLE_FIELDS
 		dbConnector = sqlite3.connect(self.dbFileName)
 		dbCursor	= dbConnector.cursor()
@@ -242,6 +252,81 @@ class StorageQueue(object):
 
 		self.dbExportToCSV()
 
+		#IRM Delete old records (30 Days by default)
+		self.deleteOldRecords()
+
+		print '\nDeleting old records...'
+
+
+
+	#IRM Execute a simple SQL Query
+	def dbSelectQuery(self, fields = '*'):
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+
+		sqlQuery = "SELECT " + str(fields) + " FROM " + str(self.dbTableName)
+
+		queryResult = []
+
+		for row in dbCursor.execute(sqlQuery):
+			queryResult.append(row)
+
+		dbConnector.close()
+
+		return queryResult
+
+
+	def deleteOldRecords(self):
+		index = self.dbFindNDaysRegisters()
+		if index > 0:
+			self.deleteFirstNRegisters(index)
+
+
+
+
+	def deleteFirstNRegisters(self, N):
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+		sqlQuery = 'DELETE from ' + str(self.dbTableName) + ' WHERE 1 = 1 LIMIT ' + str(N)
+
+		dbCursor.execute(sqlQuery)
+		dbConnector.commit()
+		dbConnector.close()
+
+
+
+
+
+	def dbFindNDaysRegisters(self, N = DB_N_DAYS, dateField = 'Date'):
+		data = self.dbSelectQuery(dateField)
+		dates = []
+		for i in data:
+			dates.append(str(i[0]))
+		print dates
+
+		today = self.dbGetToday()
+
+		index = 0
+		found = False
+		deletable = False
+		while(index < len(dates) and found is not True):
+			deltaDates = self.computeDeltaDays(today, dates[index])
+			if deltaDates > N:
+				deletable = True
+			if deletable is True and deltaDates <= N:
+				found = True
+			index += 1
+
+		if found:
+			return index
+
+		return 0
+
+
+	
+
+
+	#IRM Export Database Table to CSV File
 	def dbExportToCSV(self):
 		dbFileName  = self.dbFileName
 		dbTableName = self.dbTableName
@@ -249,6 +334,24 @@ class StorageQueue(object):
 		command = 'sqlite3 -header -csv ' + str(dbFileName) + ' "select * from ' + str(dbTableName) + ';" > ' + str(dbTableName) + str(dbExpExtension)
 		os.system(command)
 
+
+
+	#IRM Return today's date in METEO-compatible format
+	def dbGetToday(self):
+		today = time.strftime("%Y-%m-%d")
+		return today
+
+	#IRM Compute how many days exist between 2 given dates.
+	#Date format is a string 'YYYY-MM-DD'
+	#'dateAfter' must be after 'dateBefore'
+	def computeDeltaDays(self, dateAfter, dateBefore):
+		d1 = dateAfter.split('-')
+		d2 = dateBefore.split('-')
+
+		d1 = datetime.date(int(d1[0]), int(d1[1]), int(d1[2]))
+		d2 = datetime.date(int(d2[0]), int(d2[1]), int(d2[2]))
+
+		return (d1 - d2).days
 
 
 

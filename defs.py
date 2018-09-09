@@ -122,3 +122,4 @@ DB_FILE_NAME		= 'meteo.db'
 DB_TABLE_NAME	    = 'meteo'
 DB_TABLE_FIELDS     = ('Date', 'Time', 'Node', SENSOR_TOPICS[TEMP], SENSOR_TOPICS[HUM],
 						 SENSOR_TOPICS[PRES], SENSOR_TOPICS[LIGHT], SENSOR_TOPICS[AIR_Q] )
+DB_N_DAYS			= 30 #IRM How many days of data should be preserved
