@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import os
 import time
 import datetime
@@ -8,6 +10,145 @@ import paho.mqtt.client as mqttClient
 import sqlite3
 
 from defs import *
+
+
+
+class DbInterface(object):
+
+	def __init__(self):
+		self.dbFileName  = self.getCurrentDir() + DB_FILE_NAME
+		self.dbTableName = DB_TABLE_NAME
+		self.dbNDays     = DB_N_DAYS
+
+		#print str(self.dbSelectQuery('Date'))
+		#self.dbFindNDaysRegisters()
+		#self.deleteFirstNRegisters(10)
+
+	def getCurrentDir(self):
+		#return str(os.getcwd()) + '/'
+		return '/home/pi/METEO/'
+
+
+	#IRM SQLITE3 Database data commit
+	def dbCommit(self, data): 
+		#self.DB_TABLE_FIELDS = DB_TABLE_FIELDS
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+
+		#IRM Data parameter must be a tuple/list container with
+		#sorted data according to DB's table data fields
+		sqlQuery = "INSERT INTO " + str(self.dbTableName) + " values " + str(tuple(data))
+
+		dbCursor.execute(sqlQuery)
+		dbConnector.commit()
+		dbConnector.close()
+
+		self.dbExportToCSV()
+
+		#IRM Delete old records (30 Days by default)
+		self.deleteOldRecords()
+
+		#print '\nDeleting old records...'
+
+
+
+	#IRM Execute a simple SQL Query
+	def dbSelectQuery(self, fields = '*'):
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+
+		sqlQuery = "SELECT " + str(fields) + " FROM " + str(self.dbTableName)
+
+		queryResult = []
+
+		for row in dbCursor.execute(sqlQuery):
+			queryResult.append(row)
+
+		dbConnector.close()
+
+		return queryResult
+
+	#IRM High-level method "Delete Old records"
+	def deleteOldRecords(self):
+		index = self.dbFindNDaysRegisters()
+		if index > 0:
+			self.deleteFirstNRegisters(index)
+
+
+
+	#IRM Delete first N registers in SQLite DB
+	def deleteFirstNRegisters(self, N):
+		dbConnector = sqlite3.connect(self.dbFileName)
+		dbCursor	= dbConnector.cursor()
+		sqlQuery = 'DELETE from ' + str(self.dbTableName) + ' WHERE 1 = 1 LIMIT ' + str(N)
+
+		dbCursor.execute(sqlQuery)
+		dbConnector.commit()
+		dbConnector.close()
+
+
+
+
+	#IRM Find the index corresponding to the N days before today
+	def dbFindNDaysRegisters(self, N = DB_N_DAYS, dateField = 'Date'):
+		data = self.dbSelectQuery(dateField)
+		dates = []
+		for i in data:
+			dates.append(str(i[0]))
+		#print dates
+
+		today = self.dbGetToday()
+
+		index = 0
+		found = False
+		deletable = False
+		while(index < len(dates) and found is not True):
+			deltaDates = self.computeDeltaDays(today, dates[index])
+			if deltaDates >= N:
+				deletable = True
+			if deletable is True and deltaDates < N:
+				found = True
+			index += 1
+
+		if found:
+			return index
+
+		return 0
+
+
+	
+
+
+	#IRM Export Database Table to CSV File
+	def dbExportToCSV(self):
+		dbFileName  = self.dbFileName
+		dbTableName = self.dbTableName
+		dbExpExtension = METEO_FILE_FORMAT
+		command = 'sqlite3 -header -csv ' + str(dbFileName) + ' "select * from ' + str(dbTableName) + ';" > ' + self.getCurrentDir() + 'data/' + str(dbTableName) + str(dbExpExtension)
+		os.system(command)
+
+
+
+	#IRM Return today's date in METEO-compatible format
+	def dbGetToday(self):
+		today = time.strftime("%Y-%m-%d")
+		return today
+
+	#IRM Compute how many days exist between 2 given dates.
+	#Date format is a string 'YYYY-MM-DD'
+	#'dateAfter' must be after 'dateBefore'
+	def computeDeltaDays(self, dateAfter, dateBefore):
+		d1 = dateAfter.split('-')
+		d2 = dateBefore.split('-')
+
+		d1 = datetime.date(int(d1[0]), int(d1[1]), int(d1[2]))
+		d2 = datetime.date(int(d2[0]), int(d2[1]), int(d2[2]))
+
+		return (d1 - d2).days
+
+
+
+
 
 #IRM Used to store data avoiding blank fields in csv registers
 #By default 1 minute window, otherwise some fields left in blank
@@ -40,7 +181,7 @@ class StorageQueue(object):
 
 	SENSORS_SHIFT = 3 #Shift between CSV register and Data register
 
-	DELTA_TIME = 60 #IRM Passed seconds before creating a new register
+	DELTA_TIME = 50 #IRM Passed seconds before creating a new register
 	
 
 	# IRM A new instance must be created for each CSV file (every new day)
@@ -89,7 +230,7 @@ class StorageQueue(object):
 		self.csvQueue = ''
 
 		#IRM SQLite DB Init
-		self.dbInit()
+		self.db = DbInterface()
 
 		
 
@@ -134,10 +275,10 @@ class StorageQueue(object):
 			if len(queue) > 0:
 				data = str(self.__avg(queue))
 				self.registerQueue[index] = data
-				print '__toRegisterQueue: Averaging values before sending'
+				#print '__toRegisterQueue: Averaging values before sending'
 		else:
-			print '__toRegisterQueue: Writing to Register as 1 minute has passed by'
-			print '__toRegisterQueue: Register queue:  ' + str(self.registerQueue)
+			#print '__toRegisterQueue: Writing to Register as 1 minute has passed by'
+			#print '__toRegisterQueue: Register queue:  ' + str(self.registerQueue)
 			self.__writeToRegister(self.registerQueue)
 			self.lastRegisterTime = self.__getUnixTime()
 
@@ -151,15 +292,15 @@ class StorageQueue(object):
 		queueData[1] = str(time.strftime('%H:%M'))
 		queueData[2] = str(0)
 
-		print 'Original Queue Data: ' + str(queueData)
+		#print 'Original Queue Data: ' + str(queueData)
 
 		self.csvQueue = ','.join(queueData) #Comma-separated values
 		self.queueReady = True
 
-		print 'Register written: ' + str(self.csvQueue)
+		#print 'Register written: ' + str(self.csvQueue)
 
-		self.dbCommit(queueData)
-		print '__writeToRegister: Data commited into Database'
+		self.db.dbCommit(queueData)
+		#print '__writeToRegister: Data commited into Database'
 
 		#self.initialize()
 
@@ -170,7 +311,10 @@ class StorageQueue(object):
 			dstList.append(i)
 		return dstList
 
-			
+	#IRM Limit float representation to 2 decimal places
+	def __to2DecimalPlaces(self, floatValue):
+		return float("{0:.2f}".format(float(floatValue)))
+
 
 	def appendValue(self, value, sensorIndex):
 
@@ -191,21 +335,19 @@ class StorageQueue(object):
 		if self.__hasLastTime(idx):
 			if self.__getUnixTime() - self.__getLastTime(idx) < self.DELTA_TIME:
 
-				print 'appendValue: Value appended to queue!'
-				self.whichQueue[idx].append(float(value))
-				print 'appendValue: Current queue: ' + str(self.whichQueue[idx])
+				#print 'appendValue: Value appended to queue!'
+				self.whichQueue[idx].append(self.__to2DecimalPlaces(value))
+				#print 'appendValue: Current queue: ' + str(self.whichQueue[idx])
 			else:
-				print 'appendValue: Now sending to Register Queue: ' + str(self.whichQueue[idx])
+				#print 'appendValue: Now sending to Register Queue: ' + str(self.whichQueue[idx])
 				self.__toRegisterQueue(idx + self.SENSORS_SHIFT, self.whichQueue[idx])
 				self.__resetLastTime(idx)
 
-				#IRM Clean current queue
-				#self.whichQueue[idx] = self.__resetQueue()
 		else:
-			print 'appendValue: New value in queue'
+			#print 'appendValue: New value in queue'
 			try:
 				self.whichQueue[idx] = [float(value)] #IRM Replace 'False' with first value
-			except Except as e:
+			except Exception as e:
 				print 'appendValue: Exception ' + str(e)
 			self.__setLastTime(idx, self.__getUnixTime())
 
@@ -213,148 +355,7 @@ class StorageQueue(object):
 			self.__toRegisterQueue(idx + self.SENSORS_SHIFT, self.whichQueue[idx])
 
 
-			print 'appendValue: Current queue ' + str(self.whichQueue[idx])
-
-
-
-	#IRM Return string-formatted register if ready. Otherwise, return False
-	def isQueueReady(self):
-		if self.queueReady:
-			newQueue = self.__duplicateList(self.csvQueue)
-			self.initialize()
-			return newQueue
-		else:
-			return False
-
-	def dbInit(self):
-		self.dbFileName  = DB_FILE_NAME
-		self.dbTableName = DB_TABLE_NAME
-		self.dbNDays     = DB_N_DAYS
-
-		#print str(self.dbSelectQuery('Date'))
-		#self.dbFindNDaysRegisters()
-		#self.deleteFirstNRegisters(10)
-
-
-	#IRM SQLITE3 Database data commit
-	def dbCommit(self, data): 
-		#self.DB_TABLE_FIELDS = DB_TABLE_FIELDS
-		dbConnector = sqlite3.connect(self.dbFileName)
-		dbCursor	= dbConnector.cursor()
-
-		#IRM Data parameter must be a tuple/list container with
-		#sorted data according to DB's table data fields
-		sqlQuery = "INSERT INTO " + str(self.dbTableName) + " values " + str(tuple(data))
-
-		dbCursor.execute(sqlQuery)
-		dbConnector.commit()
-		dbConnector.close()
-
-		self.dbExportToCSV()
-
-		#IRM Delete old records (30 Days by default)
-		self.deleteOldRecords()
-
-		print '\nDeleting old records...'
-
-
-
-	#IRM Execute a simple SQL Query
-	def dbSelectQuery(self, fields = '*'):
-		dbConnector = sqlite3.connect(self.dbFileName)
-		dbCursor	= dbConnector.cursor()
-
-		sqlQuery = "SELECT " + str(fields) + " FROM " + str(self.dbTableName)
-
-		queryResult = []
-
-		for row in dbCursor.execute(sqlQuery):
-			queryResult.append(row)
-
-		dbConnector.close()
-
-		return queryResult
-
-
-	def deleteOldRecords(self):
-		index = self.dbFindNDaysRegisters()
-		if index > 0:
-			self.deleteFirstNRegisters(index)
-
-
-
-
-	def deleteFirstNRegisters(self, N):
-		dbConnector = sqlite3.connect(self.dbFileName)
-		dbCursor	= dbConnector.cursor()
-		sqlQuery = 'DELETE from ' + str(self.dbTableName) + ' WHERE 1 = 1 LIMIT ' + str(N)
-
-		dbCursor.execute(sqlQuery)
-		dbConnector.commit()
-		dbConnector.close()
-
-
-
-
-
-	def dbFindNDaysRegisters(self, N = DB_N_DAYS, dateField = 'Date'):
-		data = self.dbSelectQuery(dateField)
-		dates = []
-		for i in data:
-			dates.append(str(i[0]))
-		print dates
-
-		today = self.dbGetToday()
-
-		index = 0
-		found = False
-		deletable = False
-		while(index < len(dates) and found is not True):
-			deltaDates = self.computeDeltaDays(today, dates[index])
-			if deltaDates > N:
-				deletable = True
-			if deletable is True and deltaDates <= N:
-				found = True
-			index += 1
-
-		if found:
-			return index
-
-		return 0
-
-
-	
-
-
-	#IRM Export Database Table to CSV File
-	def dbExportToCSV(self):
-		dbFileName  = self.dbFileName
-		dbTableName = self.dbTableName
-		dbExpExtension = METEO_FILE_FORMAT
-		command = 'sqlite3 -header -csv ' + str(dbFileName) + ' "select * from ' + str(dbTableName) + ';" > ' + str(dbTableName) + str(dbExpExtension)
-		os.system(command)
-
-
-
-	#IRM Return today's date in METEO-compatible format
-	def dbGetToday(self):
-		today = time.strftime("%Y-%m-%d")
-		return today
-
-	#IRM Compute how many days exist between 2 given dates.
-	#Date format is a string 'YYYY-MM-DD'
-	#'dateAfter' must be after 'dateBefore'
-	def computeDeltaDays(self, dateAfter, dateBefore):
-		d1 = dateAfter.split('-')
-		d2 = dateBefore.split('-')
-
-		d1 = datetime.date(int(d1[0]), int(d1[1]), int(d1[2]))
-		d2 = datetime.date(int(d2[0]), int(d2[1]), int(d2[2]))
-
-		return (d1 - d2).days
-
-
-
+			#print 'appendValue: Current queue ' + str(self.whichQueue[idx])
 
 
 # IRM Storage will be operative only in main METEO Station (Station ID = 0)
@@ -557,11 +558,11 @@ class Storage(object):
 
 
 
-def main():
-	meteoStorage = Storage(DEBUG = True)
+def dbMain(debug = False):
+	meteoStorage = Storage(DEBUG = debug)
 	while True:
 		pass
 
 if __name__ == '__main__':
-	main()
+	dbMain(True)
 

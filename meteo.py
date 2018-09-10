@@ -5,6 +5,7 @@ Third-party dependencies
 -----------------------------------------------
 	+ paho-mqtt (https://github.com/eclipse/paho.mqtt.python)
 	+ RPi.GPIO  (https://pypi.org/project/RPi.GPIO/)
+	+ SQLite 3  (https://www.sqlite.org/index.html)
 '''
 
 
@@ -21,6 +22,7 @@ import piSensors.BH1750_METEO as BH1750
 from defs import * #IRM Global definitions, such as a C Header Definitions File
 
 from ui import UI_METEO as ui # IRM LED and Push-Button interface
+#from storage import *
 
 
 '''
@@ -157,11 +159,21 @@ class Meteo(object):
 		self.ERRORS = ERRORS
 		self.setStationNumber(STATION_NUMBER)
 
+		#IRM Change hostname
+		newHostname = 'METEO-' + str(STATION_NUMBER)
+		#os.system('hostname %s' % str(newHostname))
+
 		self.__ui = ui() # IRM Hardware-related user interface (LED and Push-Button)
-		# self.pushThread = threading.Thread(target = self.__ui.longPressReboot, args = [], name = 'PushCheckRebootThread')
-		# self.pushThread.setDaemon(True)
-		# self.pushThread.start()
-		os.system('python ui.py &')
+		self.pushThread = threading.Thread(target = self.__ui.longPressReboot, args = [], name = 'PushCheckRebootThread')
+		self.pushThread.setDaemon(True)
+		self.pushThread.start()
+		#os.system('python ui.py &')
+
+		#self.storageThread = threading.Thread(target = dbMain, args = [True], name = 'Storage Thread')
+		#self.storageThread.setDaemon(True)
+		#self.storageThread.start()
+		storageAddr = 'python ' + self.__getCurrentDir() + ' storage.py &'
+		os.system(storageAddr) # IRM Start storage process
 
 		# IRM Mutexes to avoid multiple access tries from different threads
 		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
@@ -219,6 +231,10 @@ class Meteo(object):
 	def __getMinMaxSR(self):
 		return (MIN_SAMPLING_RATE, MAX_SAMPLING_RATE)
 
+	def __getCurrentDir(self):
+		#return str(os.getcwd()) + '/'
+		return '/home/pi/METEO/'
+
 
 	'''
 	IRM Other private methods
@@ -237,7 +253,9 @@ class Meteo(object):
 		brokerAddr = MQTT_BROKER
 		brokerPort = MQTT_PORT
 
-		a = os.system('python wdt.py ' + str(myNodeID) + ' ' + str(aliveBeaconPeriod) + ' ' + str(brokerAddr) + ' ' + str(brokerPort))
+		wdtAddress = 'python ' + self.__getCurrentDir() + 'wdt.py '
+
+		a = os.system(wdtAddress + str(myNodeID) + ' ' + str(aliveBeaconPeriod) + ' ' + str(brokerAddr) + ' ' + str(brokerPort))
 
 		if self.DEBUG:
 			print 'Launching WDT'
@@ -575,4 +593,5 @@ def meteoTestBench():
 
 if __name__ == '__main__':
 	meteoTestBench()
+
 

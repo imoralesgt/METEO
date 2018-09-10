@@ -19,8 +19,10 @@ MQTT_PORT   = 1883 # IRM MQTT borker port. Default value is 1883
 #Sensors sampling rate limits
 MIN_SAMPLING_RATE     = 1   * 60 # 1 minute
 MAX_SAMPLING_RATE     = 120 * 60 # 2 hours
-DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 5 # 5 minutes
+DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 1 # 5 minutes
 
+#IRM How many days of data should be preserved in database
+DB_N_DAYS			  = 30 
 
 '''
 Don't modify anything else below this line
@@ -122,4 +124,3 @@ DB_FILE_NAME		= 'meteo.db'
 DB_TABLE_NAME	    = 'meteo'
 DB_TABLE_FIELDS     = ('Date', 'Time', 'Node', SENSOR_TOPICS[TEMP], SENSOR_TOPICS[HUM],
 						 SENSOR_TOPICS[PRES], SENSOR_TOPICS[LIGHT], SENSOR_TOPICS[AIR_Q] )
-DB_N_DAYS			= 30 #IRM How many days of data should be preserved
