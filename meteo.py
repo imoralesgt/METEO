@@ -22,7 +22,7 @@ import piSensors.BH1750_METEO as BH1750
 from defs import * #IRM Global definitions, such as a C Header Definitions File
 
 from ui import UI_METEO as ui # IRM LED and Push-Button interface
-#from storage import *
+from storage import *
 
 
 '''
@@ -169,11 +169,11 @@ class Meteo(object):
 		self.pushThread.start()
 		#os.system('python ui.py &')
 
-		#self.storageThread = threading.Thread(target = dbMain, args = [True], name = 'Storage Thread')
-		#self.storageThread.setDaemon(True)
-		#self.storageThread.start()
-		storageAddr = 'python ' + self.__getCurrentDir() + ' storage.py &'
-		os.system(storageAddr) # IRM Start storage process
+		self.storageThread = threading.Thread(target = dbMain, args = [True], name = 'Storage Thread')
+		self.storageThread.setDaemon(True)
+		self.storageThread.start()
+		#storageAddr = 'python ' + self.__getCurrentDir() + ' storage.py &'
+		#os.system(storageAddr) # IRM Start storage process
 
 		# IRM Mutexes to avoid multiple access tries from different threads
 		self.bme680Mutex = Mutex(autoExec = True, DEBUG = False) 
