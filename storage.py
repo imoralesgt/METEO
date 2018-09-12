@@ -564,5 +564,5 @@ def dbMain(debug = False):
 		pass
 
 if __name__ == '__main__':
-	dbMain(True)
+	dbMain(False)
 
