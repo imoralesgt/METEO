@@ -1,0 +1,1247 @@
+[
+    {
+        "id": "783f03ff.8652fc",
+        "type": "tab",
+        "label": "0",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "786e6d81.c570e4",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "Myself",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "8076f24c.50e41",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-dark",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#097479",
+                    "value": "#097479",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#097479",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#000000",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#0eb8c0",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#555555",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#333333",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#eeeeee",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#097479",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#333333",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            }
+        },
+        "site": {
+            "name": "Agricultura Vertical",
+            "hideToolbar": "false",
+            "allowSwipe": "true",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "33f3f6d3.c3993a",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Node 0 - Real Time Data",
+        "icon": "dashboard"
+    },
+    {
+        "id": "6c9f2cf1.875fd4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temperature",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "77f23400.5403ec",
+        "type": "ui_group",
+        "z": "",
+        "name": "Relative Humidity",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "58885088.79467",
+        "type": "ui_group",
+        "z": "",
+        "name": "Pressure",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "d1a22723.8a66f8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luminosity",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "109376cb.eb4259",
+        "type": "ui_group",
+        "z": "",
+        "name": "Air Quality",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4d62613f.e947a",
+        "type": "ui_group",
+        "z": "",
+        "name": "Status",
+        "tab": "33f3f6d3.c3993a",
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "dab8084d.5cec08",
+        "type": "ui_group",
+        "z": "",
+        "name": "Registros",
+        "tab": "59c709c.38723f8",
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "59c709c.38723f8",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard"
+    },
+    {
+        "id": "62f61a5.fa3a4e4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Download history",
+        "tab": "33f3f6d3.c3993a",
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "383174ff.ffc87c",
+        "type": "ftp-download-server",
+        "z": "",
+        "host": "localhost",
+        "port": "21",
+        "user": "meteo",
+        "connTimeout": "10000",
+        "pasvTimeout": "10000",
+        "keepalive": "10000",
+        "name": ""
+    },
+    {
+        "id": "a9de383c.a21e98",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "Temperature",
+        "topic": "METEO/0/Data/Temperature",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 270,
+        "y": 280,
+        "wires": [
+            [
+                "a57deefc.53679",
+                "bdc28677.185b68",
+                "f3e555d6.230f98"
+            ]
+        ]
+    },
+    {
+        "id": "af65bc78.7c096",
+        "type": "comment",
+        "z": "783f03ff.8652fc",
+        "name": "Global Constants",
+        "info": "Global constants definitions, such as MQTT Topic Names",
+        "x": 460,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "b2eeef15.f5be9",
+        "type": "comment",
+        "z": "783f03ff.8652fc",
+        "name": "METEO STATION INDEX",
+        "info": "Each METEO station will be associated to a\nunique flow, whose name will be the corresponding\nMETEO Station Index.\n\nFor instance:\n- Flow \"0\" corresponds to METEO Station 0\n- Flow \"1\" corresponds to METEO Station 1\n\n... and so on and so forth.\n",
+        "x": 250,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "a57deefc.53679",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "51d6b849.0a6978",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "855db8b5.683fe8",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "Alive",
+        "topic": "METEO/Alive",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 250,
+        "y": 960,
+        "wires": [
+            [
+                "51d6b849.0a6978"
+            ]
+        ]
+    },
+    {
+        "id": "14f0d072.060c1",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "Humidity",
+        "topic": "METEO/0/Data/Humidity",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 260,
+        "y": 420,
+        "wires": [
+            [
+                "4ae0122d.a2a70c",
+                "a48bb2ea.66f6a",
+                "9f3857ba.5303b8"
+            ]
+        ]
+    },
+    {
+        "id": "4ae0122d.a2a70c",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "d3af7564.985528",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "Pressure",
+        "topic": "METEO/0/Data/Pressure",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 260,
+        "y": 560,
+        "wires": [
+            [
+                "795a9bc9.da1804",
+                "a70f4ced.8e6fd",
+                "f3934f62.c6a45"
+            ]
+        ]
+    },
+    {
+        "id": "795a9bc9.da1804",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "a1c3205e.90d32",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "Luminosity",
+        "topic": "METEO/0/Data/Light",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 260,
+        "y": 700,
+        "wires": [
+            [
+                "9e77a8b9.f2a988",
+                "9997330b.b0d3",
+                "77817f5f.c2e5a"
+            ]
+        ]
+    },
+    {
+        "id": "9e77a8b9.f2a988",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "9872e57c.38d008",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "AirQuality",
+        "topic": "METEO/0/Data/AirQuality",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 260,
+        "y": 840,
+        "wires": [
+            [
+                "e0f9bbd5.7ddd78",
+                "33ed98a7.f6cfa8",
+                "6ee386c0.c6c068"
+            ]
+        ]
+    },
+    {
+        "id": "e0f9bbd5.7ddd78",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 450,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "bdc28677.185b68",
+        "type": "ui_gauge",
+        "z": "783f03ff.8652fc",
+        "name": "Temperature",
+        "group": "6c9f2cf1.875fd4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "-20",
+        "max": "50",
+        "colors": [
+            "#0080c0",
+            "#00ff40",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 450,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "a48bb2ea.66f6a",
+        "type": "ui_gauge",
+        "z": "783f03ff.8652fc",
+        "name": "Humidity",
+        "group": "77f23400.5403ec",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Relative Humidity",
+        "label": "%",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#ff7777",
+            "#00ff40",
+            "#005e95"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 440,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "a70f4ced.8e6fd",
+        "type": "ui_gauge",
+        "z": "783f03ff.8652fc",
+        "name": "Pressure",
+        "group": "58885088.79467",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Atmospheric Pressure",
+        "label": "hPa",
+        "format": "{{value}}",
+        "min": "700",
+        "max": "1100",
+        "colors": [
+            "#78a0fe",
+            "#00ff40",
+            "#ff6f6f"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 440,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "9997330b.b0d3",
+        "type": "ui_gauge",
+        "z": "783f03ff.8652fc",
+        "name": "Luminosity",
+        "group": "d1a22723.8a66f8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Luminosity",
+        "label": "lux",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "50000",
+        "colors": [
+            "#000000",
+            "#587ba7",
+            "#fffc6f"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 450,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "33ed98a7.f6cfa8",
+        "type": "ui_gauge",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "group": "109376cb.eb4259",
+        "order": 0,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Indoor Air Quality",
+        "label": "IAQ",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "500",
+        "colors": [
+            "#82f2ff",
+            "#ccfb86",
+            "#ec0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 470,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "f3e555d6.230f98",
+        "type": "ui_chart",
+        "z": "783f03ff.8652fc",
+        "name": "Temperature",
+        "group": "6c9f2cf1.875fd4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for temperature data...",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "6",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 450,
+        "y": 320,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "9f3857ba.5303b8",
+        "type": "ui_chart",
+        "z": "783f03ff.8652fc",
+        "name": "Humidity",
+        "group": "77f23400.5403ec",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for humidity data...",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "6",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 440,
+        "y": 460,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "f3934f62.c6a45",
+        "type": "ui_chart",
+        "z": "783f03ff.8652fc",
+        "name": "Pressure",
+        "group": "58885088.79467",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for pressure data...",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "6",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 440,
+        "y": 600,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "77817f5f.c2e5a",
+        "type": "ui_chart",
+        "z": "783f03ff.8652fc",
+        "name": "Luminosity",
+        "group": "d1a22723.8a66f8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for luminosity data...",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "6",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 450,
+        "y": 740,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "6ee386c0.c6c068",
+        "type": "ui_chart",
+        "z": "783f03ff.8652fc",
+        "name": "Air Quality",
+        "group": "109376cb.eb4259",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for air quality data...",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "6",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 450,
+        "y": 880,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "fc797d90.75dff",
+        "type": "ui_numeric",
+        "z": "783f03ff.8652fc",
+        "name": "Temp Sampling Rate",
+        "label": "Sampling Rate (minutes)",
+        "group": "6c9f2cf1.875fd4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "topic": "METEO/0/Settings/SamplingRate/Temperature",
+        "format": "{{value}}",
+        "min": "1",
+        "max": "120",
+        "step": 1,
+        "x": 900,
+        "y": 280,
+        "wires": [
+            [
+                "ee688870.2b50a8"
+            ]
+        ]
+    },
+    {
+        "id": "a8a3c677.72bfd8",
+        "type": "mqtt out",
+        "z": "783f03ff.8652fc",
+        "name": "TempSamplingRate",
+        "topic": "METEO/0/Settings/SamplingRate/Temperature",
+        "qos": "2",
+        "retain": "true",
+        "broker": "786e6d81.c570e4",
+        "x": 1270,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "ee688870.2b50a8",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "MinToSec",
+        "func": "var sec = msg.payload;\nmin = {payload: 60*sec};\nreturn min;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 280,
+        "wires": [
+            [
+                "a8a3c677.72bfd8"
+            ]
+        ]
+    },
+    {
+        "id": "569f36de.fb8e08",
+        "type": "ui_numeric",
+        "z": "783f03ff.8652fc",
+        "name": "Hum Sampling Rate",
+        "label": "Sampling Rate (minutes)",
+        "group": "77f23400.5403ec",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "topic": "METEO/0/Settings/SamplingRate/Humidity",
+        "format": "{{value}}",
+        "min": "1",
+        "max": "120",
+        "step": 1,
+        "x": 900,
+        "y": 420,
+        "wires": [
+            [
+                "74c47fd3.f7ce5"
+            ]
+        ]
+    },
+    {
+        "id": "e686a915.9eb638",
+        "type": "mqtt out",
+        "z": "783f03ff.8652fc",
+        "name": "HumiditySamplingRate",
+        "topic": "METEO/0/Settings/SamplingRate/Humidity",
+        "qos": "2",
+        "retain": "true",
+        "broker": "786e6d81.c570e4",
+        "x": 1280,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "74c47fd3.f7ce5",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "MinToSec",
+        "func": "var sec = msg.payload;\nmin = {payload: 60*sec};\nreturn min;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 420,
+        "wires": [
+            [
+                "e686a915.9eb638"
+            ]
+        ]
+    },
+    {
+        "id": "5a84017b.39755",
+        "type": "ui_numeric",
+        "z": "783f03ff.8652fc",
+        "name": "Pres Sampling Rate",
+        "label": "Sampling Rate (minutes)",
+        "group": "58885088.79467",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "topic": "METEO/0/Settings/SamplingRate/Pressure",
+        "format": "{{value}}",
+        "min": "1",
+        "max": "120",
+        "step": 1,
+        "x": 900,
+        "y": 560,
+        "wires": [
+            [
+                "888b0e02.879bc"
+            ]
+        ]
+    },
+    {
+        "id": "e610219d.f500e",
+        "type": "mqtt out",
+        "z": "783f03ff.8652fc",
+        "name": "PresSamplingRate",
+        "topic": "METEO/0/Settings/SamplingRate/Pressure",
+        "qos": "2",
+        "retain": "true",
+        "broker": "786e6d81.c570e4",
+        "x": 1270,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "888b0e02.879bc",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "MinToSec",
+        "func": "var sec = msg.payload;\nmin = {payload: 60*sec};\nreturn min;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 560,
+        "wires": [
+            [
+                "e610219d.f500e"
+            ]
+        ]
+    },
+    {
+        "id": "eee17578.20ab78",
+        "type": "ui_numeric",
+        "z": "783f03ff.8652fc",
+        "name": "Lum Sampling Rate",
+        "label": "Sampling Rate (minutes)",
+        "group": "d1a22723.8a66f8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "topic": "METEO/0/Settings/SamplingRate/Luminosity",
+        "format": "{{value}}",
+        "min": "1",
+        "max": "120",
+        "step": 1,
+        "x": 890,
+        "y": 700,
+        "wires": [
+            [
+                "2a8f1ac9.7ef526"
+            ]
+        ]
+    },
+    {
+        "id": "77211b11.ba8284",
+        "type": "mqtt out",
+        "z": "783f03ff.8652fc",
+        "name": "LightSamplingRate",
+        "topic": "METEO/0/Settings/SamplingRate/Light",
+        "qos": "2",
+        "retain": "true",
+        "broker": "786e6d81.c570e4",
+        "x": 1270,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "2a8f1ac9.7ef526",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "MinToSec",
+        "func": "var sec = msg.payload;\nmin = {payload: 60*sec};\nreturn min;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 700,
+        "wires": [
+            [
+                "77211b11.ba8284"
+            ]
+        ]
+    },
+    {
+        "id": "3b5acb6.e36f134",
+        "type": "ui_numeric",
+        "z": "783f03ff.8652fc",
+        "name": "AirQ Sampling Rate",
+        "label": "Sampling Rate (minutes)",
+        "group": "109376cb.eb4259",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "topic": "METEO/0/Settings/SamplingRate/AirQuality",
+        "format": "{{value}}",
+        "min": "1",
+        "max": "120",
+        "step": 1,
+        "x": 900,
+        "y": 840,
+        "wires": [
+            [
+                "cd1f8e71.990ff"
+            ]
+        ]
+    },
+    {
+        "id": "3bd0d1f.aef2a2e",
+        "type": "mqtt out",
+        "z": "783f03ff.8652fc",
+        "name": "AirQSamplingRate",
+        "topic": "METEO/0/Settings/SamplingRate/AirQuality",
+        "qos": "2",
+        "retain": "true",
+        "broker": "786e6d81.c570e4",
+        "x": 1270,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "cd1f8e71.990ff",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "MinToSec",
+        "func": "var sec = msg.payload;\nmin = {payload: 60*sec};\nreturn min;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 840,
+        "wires": [
+            [
+                "3bd0d1f.aef2a2e"
+            ]
+        ]
+    },
+    {
+        "id": "8fdbac50.1fc8f",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "TempSR",
+        "topic": "METEO/0/Settings/SamplingRate/Temperature",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 860,
+        "y": 220,
+        "wires": [
+            [
+                "27f88857.233878"
+            ]
+        ]
+    },
+    {
+        "id": "27f88857.233878",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "SecToMin",
+        "func": "var min = msg.payload;\nsec = {payload: min / 60};\nreturn sec;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 220,
+        "wires": [
+            [
+                "fc797d90.75dff"
+            ]
+        ]
+    },
+    {
+        "id": "92311d41.743aa",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "HumSR",
+        "topic": "METEO/0/Settings/SamplingRate/Humidity",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 850,
+        "y": 360,
+        "wires": [
+            [
+                "4d978611.456208"
+            ]
+        ]
+    },
+    {
+        "id": "4d978611.456208",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "SecToMin",
+        "func": "var min = msg.payload;\nsec = {payload: min / 60};\nreturn sec;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 360,
+        "wires": [
+            [
+                "569f36de.fb8e08"
+            ]
+        ]
+    },
+    {
+        "id": "2fb95c9b.5bcba4",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "PressSR",
+        "topic": "METEO/0/Settings/SamplingRate/Pressure",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 860,
+        "y": 500,
+        "wires": [
+            [
+                "45de9b8b.77be64"
+            ]
+        ]
+    },
+    {
+        "id": "45de9b8b.77be64",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "SecToMin",
+        "func": "var min = msg.payload;\nsec = {payload: min / 60};\nreturn sec;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 500,
+        "wires": [
+            [
+                "5a84017b.39755"
+            ]
+        ]
+    },
+    {
+        "id": "4bc64b55.9f3cb4",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "LightSR",
+        "topic": "METEO/0/Settings/SamplingRate/Light",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 850,
+        "y": 640,
+        "wires": [
+            [
+                "a2ec6517.370de8"
+            ]
+        ]
+    },
+    {
+        "id": "a2ec6517.370de8",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "SecToMin",
+        "func": "var min = msg.payload;\nsec = {payload: min / 60};\nreturn sec;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 640,
+        "wires": [
+            [
+                "eee17578.20ab78"
+            ]
+        ]
+    },
+    {
+        "id": "9bc46d9a.79551",
+        "type": "mqtt in",
+        "z": "783f03ff.8652fc",
+        "name": "AirQSR",
+        "topic": "METEO/0/Settings/SamplingRate/AirQuality",
+        "qos": "2",
+        "broker": "786e6d81.c570e4",
+        "x": 850,
+        "y": 780,
+        "wires": [
+            [
+                "16deaaf6.807ec5"
+            ]
+        ]
+    },
+    {
+        "id": "16deaaf6.807ec5",
+        "type": "function",
+        "z": "783f03ff.8652fc",
+        "name": "SecToMin",
+        "func": "var min = msg.payload;\nsec = {payload: min / 60};\nreturn sec;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 780,
+        "wires": [
+            [
+                "3b5acb6.e36f134"
+            ]
+        ]
+    },
+    {
+        "id": "ee8f6258.ad53d",
+        "type": "ui_template",
+        "z": "783f03ff.8652fc",
+        "group": "62f61a5.fa3a4e4",
+        "name": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<button class=\"button\" onclick=\"window.location.href='ftp://meteo:meteo@192.168.0.102/meteo.csv','_blank'\">CSV File</button>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 680,
+        "y": 1260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1b992084.93812f",
+        "type": "change",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "headers['Content-Disposition']",
+                "pt": "msg",
+                "to": "attachment; filename=meteo.csv",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1260,
+        "wires": [
+            [
+                "ee8f6258.ad53d"
+            ]
+        ]
+    }
+]
