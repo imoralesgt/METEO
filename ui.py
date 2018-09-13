@@ -58,7 +58,7 @@ class UI_METEO(object):
 				while push:
 					currentTime = time.time()
 					self.output(self.led, not self.ledState)
-					time.sleep(0.1)
+					time.sleep(0.5)
 					if currentTime - startTime > self.LONG_PRESS and reboot == False:
 						#a = os.system('sudo echo "Rebooting now!"')
 						a = os.system('sudo reboot now')

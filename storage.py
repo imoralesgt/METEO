@@ -363,7 +363,7 @@ class StorageQueue(object):
 
 class Storage(object):
 
-	def __init__(self, DEBUG = 0):
+	def __init__(self, DEBUG = False):
 
 		#IRM METEO Station ID
 		self.meteoID = STATION_NUMBER

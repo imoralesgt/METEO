@@ -1211,8 +1211,8 @@
         "storeOutMessages": false,
         "fwdInMessages": false,
         "templateScope": "local",
-        "x": 680,
-        "y": 1260,
+        "x": 1200,
+        "y": 940,
         "wires": [
             []
         ]
@@ -1236,12 +1236,71 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 430,
-        "y": 1260,
+        "x": 950,
+        "y": 940,
         "wires": [
             [
                 "ee8f6258.ad53d"
             ]
         ]
+    },
+    {
+        "id": "dc32305.1e876d",
+        "type": "inject",
+        "z": "783f03ff.8652fc",
+        "name": "Launch Meteo",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "x": 440,
+        "y": 1120,
+        "wires": [
+            [
+                "871bf569.2b29d8"
+            ]
+        ]
+    },
+    {
+        "id": "871bf569.2b29d8",
+        "type": "exec",
+        "z": "783f03ff.8652fc",
+        "command": "/home/pi/METEO/meteo.py",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "",
+        "x": 680,
+        "y": 1120,
+        "wires": [
+            [
+                "980fc6e2.c58288"
+            ],
+            [
+                "980fc6e2.c58288"
+            ],
+            [
+                "980fc6e2.c58288"
+            ]
+        ]
+    },
+    {
+        "id": "980fc6e2.c58288",
+        "type": "debug",
+        "z": "783f03ff.8652fc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1010,
+        "y": 1120,
+        "wires": []
     }
 ]

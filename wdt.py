@@ -10,7 +10,7 @@ from defs import * #IRM Global Definitions
 class WDT(object):
 
 	REQUIRED_PARAMETERS = 5 # IRM ['scriptName.py', 'nodeID', 'aliveTimeout', 'serverIP', 'serverPort']
-	MAX_ALIVE_PERIODS   = 3 # IRM Max alive periods without beacon to execute WDT action (restart service)
+	MAX_ALIVE_PERIODS   = 10 # IRM Max alive periods without beacon to execute WDT action (restart service)
 
 	MQTT_ROOT_TOPIC  = ROOT_TOPIC
 	MQTT_ALIVE_TOPIC = KEEP_ALIVE_TOPIC
@@ -148,8 +148,10 @@ class WDT(object):
 		return False
 
 	def restartMETEO(self): #IRM Restart METEO execution 
-		a = os.system('sudo pkill meteo')
-		a = os.system('./meteo.py &')
+		#a = os.system('sudo pkill meteo')
+		#a = os.system('sudo pkill meteo.py')
+		#a = os.system('python meteo.py &')
+		a = os.system('sudo reboot')
 
 	def wdt(self):
 		if self.wdtRunning is True:

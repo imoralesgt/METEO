@@ -169,7 +169,7 @@ class Meteo(object):
 		self.pushThread.start()
 		#os.system('python ui.py &')
 
-		self.storageThread = threading.Thread(target = dbMain, args = [True], name = 'Storage Thread')
+		self.storageThread = threading.Thread(target = dbMain, args = [False], name = 'Storage Thread')
 		self.storageThread.setDaemon(True)
 		self.storageThread.start()
 		#storageAddr = 'python ' + self.__getCurrentDir() + ' storage.py &'
@@ -585,7 +585,7 @@ class Meteo(object):
 def meteoTestBench():
 	try:
 		#myMeteo = Meteo(True) # IRM Enable Debugging
-		myMeteo = Meteo(False) # IRM Debugging disabled
+		myMeteo = Meteo(wdt = True) # IRM Debugging disabled
 	except KeyboardInterrupt:
 		print 'Killing Meteo!'
 		del myMeteo
