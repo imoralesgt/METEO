@@ -51,7 +51,7 @@
 - [x] Design a PCB to place the sensor boards and the User-Interaction hardware (push-button + LED)
 	- [x] Design must be compatible with Raspberry PI 3 header footprint
 	- [x] Power must be supplied from Raspberry PI's 3v3/GND breakout pins
-	- [ ] Manufacture PCB and test functionality
+	- [x] Manufacture PCB and test functionality
 
 ## BME680_METEO
 - [x] Compute Air Quality (%) using Humidity and Gas measurements
@@ -63,12 +63,12 @@
 
 
 ## Data management
-- [ ] Grab sensors' data from MQTT broker and process it to deliver filtered information 
-- [ ] Store the processed data into a database (CSV files?)
-- [ ] Retreive data from Broker and append it to CSV file (running in parallel thread?)
-- [ ] Create a new CSV file every day
-- [ ] If several measurements from different sensors retreived within the same MINUTE, store them in the same CSV row.
-- [ ] If several measurements form the same sensor retreived within the same MINUTE, average grabbed values and then store the last average computation.
+- [x] Grab sensors' data from MQTT broker and process it to deliver filtered information 
+- [x] Store the processed data into a SQLite database
+- [x] Retreive data from Broker and append it to a table within in the DB (running in parallel thread?)
+- [x] Export table's content to a CSV when required
+- [x] If several measurements from different sensors retreived within the same MINUTE, store them in the same register row.
+- [x] If several measurements form the same sensor retreived within the same MINUTE, average grabbed values and then store the last average computation.
 
 ## Reliability
 - [x] Run meteo.py as a standalone application
@@ -83,4 +83,4 @@
 	- [x] Start WDT timer after the first ```ALIVE``` message arrives
 
 # User interface
-- [ ] Node-RED User Interface
+- [x] Node-RED User Interface
