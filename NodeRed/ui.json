@@ -7,223 +7,6 @@
         "info": ""
     },
     {
-        "id": "786e6d81.c570e4",
-        "type": "mqtt-broker",
-        "z": "",
-        "name": "Myself",
-        "broker": "localhost",
-        "port": "1883",
-        "clientid": "",
-        "usetls": false,
-        "compatmode": true,
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": ""
-    },
-    {
-        "id": "8076f24c.50e41",
-        "type": "ui_base",
-        "theme": {
-            "name": "theme-dark",
-            "lightTheme": {
-                "default": "#0094CE",
-                "baseColor": "#0094CE",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": true,
-                "reset": false
-            },
-            "darkTheme": {
-                "default": "#097479",
-                "baseColor": "#097479",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": true,
-                "reset": false
-            },
-            "customTheme": {
-                "name": "Untitled Theme 1",
-                "default": "#4B7930",
-                "baseColor": "#4B7930",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-            },
-            "themeState": {
-                "base-color": {
-                    "default": "#097479",
-                    "value": "#097479",
-                    "edited": false
-                },
-                "page-titlebar-backgroundColor": {
-                    "value": "#097479",
-                    "edited": false
-                },
-                "page-backgroundColor": {
-                    "value": "#111111",
-                    "edited": false
-                },
-                "page-sidebar-backgroundColor": {
-                    "value": "#000000",
-                    "edited": false
-                },
-                "group-textColor": {
-                    "value": "#0eb8c0",
-                    "edited": false
-                },
-                "group-borderColor": {
-                    "value": "#555555",
-                    "edited": false
-                },
-                "group-backgroundColor": {
-                    "value": "#333333",
-                    "edited": false
-                },
-                "widget-textColor": {
-                    "value": "#eeeeee",
-                    "edited": false
-                },
-                "widget-backgroundColor": {
-                    "value": "#097479",
-                    "edited": false
-                },
-                "widget-borderColor": {
-                    "value": "#333333",
-                    "edited": false
-                },
-                "base-font": {
-                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-                }
-            }
-        },
-        "site": {
-            "name": "Agricultura Vertical",
-            "hideToolbar": "false",
-            "allowSwipe": "true",
-            "allowTempTheme": "true",
-            "dateFormat": "DD/MM/YYYY",
-            "sizes": {
-                "sx": 48,
-                "sy": 48,
-                "gx": 6,
-                "gy": 6,
-                "cx": 6,
-                "cy": 6,
-                "px": 0,
-                "py": 0
-            }
-        }
-    },
-    {
-        "id": "33f3f6d3.c3993a",
-        "type": "ui_tab",
-        "z": "",
-        "name": "Node 0 - Real Time Data",
-        "icon": "dashboard"
-    },
-    {
-        "id": "6c9f2cf1.875fd4",
-        "type": "ui_group",
-        "z": "",
-        "name": "Temperature",
-        "tab": "33f3f6d3.c3993a",
-        "disp": false,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "77f23400.5403ec",
-        "type": "ui_group",
-        "z": "",
-        "name": "Relative Humidity",
-        "tab": "33f3f6d3.c3993a",
-        "disp": false,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "58885088.79467",
-        "type": "ui_group",
-        "z": "",
-        "name": "Pressure",
-        "tab": "33f3f6d3.c3993a",
-        "disp": false,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "d1a22723.8a66f8",
-        "type": "ui_group",
-        "z": "",
-        "name": "Luminosity",
-        "tab": "33f3f6d3.c3993a",
-        "disp": false,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "109376cb.eb4259",
-        "type": "ui_group",
-        "z": "",
-        "name": "Air Quality",
-        "tab": "33f3f6d3.c3993a",
-        "disp": false,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "4d62613f.e947a",
-        "type": "ui_group",
-        "z": "",
-        "name": "Status",
-        "tab": "33f3f6d3.c3993a",
-        "disp": true,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "dab8084d.5cec08",
-        "type": "ui_group",
-        "z": "",
-        "name": "Registros",
-        "tab": "59c709c.38723f8",
-        "disp": true,
-        "width": "6"
-    },
-    {
-        "id": "59c709c.38723f8",
-        "type": "ui_tab",
-        "z": "",
-        "name": "Home",
-        "icon": "dashboard"
-    },
-    {
-        "id": "62f61a5.fa3a4e4",
-        "type": "ui_group",
-        "z": "",
-        "name": "Download history",
-        "tab": "33f3f6d3.c3993a",
-        "disp": true,
-        "width": "4",
-        "collapse": false
-    },
-    {
-        "id": "383174ff.ffc87c",
-        "type": "ftp-download-server",
-        "z": "",
-        "host": "localhost",
-        "port": "21",
-        "user": "meteo",
-        "connTimeout": "10000",
-        "pasvTimeout": "10000",
-        "keepalive": "10000",
-        "name": ""
-    },
-    {
         "id": "a9de383c.a21e98",
         "type": "mqtt in",
         "z": "783f03ff.8652fc",
@@ -1268,7 +1051,7 @@
         "id": "871bf569.2b29d8",
         "type": "exec",
         "z": "783f03ff.8652fc",
-        "command": "/home/pi/METEO/meteo.py",
+        "command": "/home/pi/METEO/meteo.sh",
         "addpay": false,
         "append": "",
         "useSpawn": "false",
@@ -1302,5 +1085,94 @@
         "x": 1010,
         "y": 1120,
         "wires": []
+    },
+    {
+        "id": "786e6d81.c570e4",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "Myself",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "6c9f2cf1.875fd4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temperature",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "77f23400.5403ec",
+        "type": "ui_group",
+        "z": "",
+        "name": "Relative Humidity",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "58885088.79467",
+        "type": "ui_group",
+        "z": "",
+        "name": "Pressure",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "d1a22723.8a66f8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luminosity",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "109376cb.eb4259",
+        "type": "ui_group",
+        "z": "",
+        "name": "Air Quality",
+        "tab": "33f3f6d3.c3993a",
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "62f61a5.fa3a4e4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Download history",
+        "tab": "33f3f6d3.c3993a",
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "33f3f6d3.c3993a",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Node 0 - Real Time Data",
+        "icon": "dashboard"
     }
 ]

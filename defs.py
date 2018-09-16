@@ -19,10 +19,10 @@ MQTT_PORT   = 1883 # IRM MQTT borker port. Default value is 1883
 #Sensors sampling rate limits
 MIN_SAMPLING_RATE     = 1   * 60 # 1 minute
 MAX_SAMPLING_RATE     = 120 * 60 # 2 hours
-DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 1 # 5 minutes
+DEFAULT_SAMPLING_RATE = MIN_SAMPLING_RATE * 5 # 5 minutes
 
 #IRM How many days of data should be preserved in database
-DB_N_DAYS			  = 30 
+DB_N_DAYS			  = 30
 
 '''
 Don't modify anything else below this line
@@ -84,7 +84,7 @@ MAX_CLIENTS = 256
 
 
 # IRM other MQTT-related defines
-KEEP_ALIVE_BEACON_PERIOD = 60 # IRM Send beacon every minute
+KEEP_ALIVE_BEACON_PERIOD = 30 # IRM Send beacon every 30 seconds
 MQTT_RX_QUEUE_SUPERVISE_PERIOD = 0.1 # IRM Check input queue every 100 ms
 
 '''

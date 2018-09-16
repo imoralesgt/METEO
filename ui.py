@@ -8,7 +8,7 @@ import os
 class UI_METEO(object):
 
 	gpio = GPIO
-	LONG_PRESS = 30
+	LONG_PRESS = 15
 
 	# IRM Setup GPIO directives
 	def __init__(self, ledPin = 11, pushPin = 7):

@@ -22,7 +22,7 @@ import piSensors.BH1750_METEO as BH1750
 from defs import * #IRM Global definitions, such as a C Header Definitions File
 
 from ui import UI_METEO as ui # IRM LED and Push-Button interface
-from storage import *
+#from storage import *
 
 
 '''
@@ -169,9 +169,9 @@ class Meteo(object):
 		self.pushThread.start()
 		#os.system('python ui.py &')
 
-		self.storageThread = threading.Thread(target = dbMain, args = [False], name = 'Storage Thread')
-		self.storageThread.setDaemon(True)
-		self.storageThread.start()
+		#self.storageThread = threading.Thread(target = dbMain, args = [False], name = 'Storage Thread')
+		#self.storageThread.setDaemon(True)
+		#self.storageThread.start()
 		#storageAddr = 'python ' + self.__getCurrentDir() + ' storage.py &'
 		#os.system(storageAddr) # IRM Start storage process
 
@@ -267,7 +267,7 @@ class Meteo(object):
 
 	# IRM Connects to MQTT Broker as client
 	def __setupMQTTClient(self, address, port):
-		self.mqttC = mqttClient.Client()
+		self.mqttC = mqttClient.Client(clean_session=False, client_id="METEO"+str(self.getStationNumber())+"_METEO")
 
 		self.mqttC.on_message = self.__mqttCallback_onMessage
 		self.mqttC.on_connect = self.__mqttCallback_onConnect
@@ -276,12 +276,12 @@ class Meteo(object):
 		try:
 			self.mqttC.connect(address, port)
 		except socket.error:
-			if self.DEBUG:
-				print 'Could not connect to Mosquitto broker at ' + str(address) + ':' + str(port)
-				print 'Restarting service and trying to reconnect...'
+			
+			print 'Could not connect to Mosquitto broker at ' + str(address) + ':' + str(port)
+			print 'Restarting service and trying to reconnect...'
 
 			os.system("sudo service mosquitto restart")
-			time.sleep(1)
+			time.sleep(10)
 			self.mqttC.reconnect()
 
 
@@ -585,7 +585,7 @@ class Meteo(object):
 def meteoTestBench():
 	try:
 		#myMeteo = Meteo(True) # IRM Enable Debugging
-		myMeteo = Meteo(wdt = True) # IRM Debugging disabled
+		myMeteo = Meteo(wdt = False) # IRM Debugging disabled
 	except KeyboardInterrupt:
 		print 'Killing Meteo!'
 		del myMeteo

@@ -390,7 +390,7 @@ class Storage(object):
 		self.CSV_HEADER = CSV_HEADER
 
 		#IRM MQTT Client
-		self.mqttC = mqttClient.Client()
+		self.mqttC = mqttClient.Client(clean_session=False, client_id="METEO"+str(STATION_NUMBER)+"_Storage")
 		self.mqttC.on_message = self.__mqttCallback_onMessage
 		self.mqttC.on_connect = self.__mqttCallback_onConnect
 		self.mqttC.on_publish = self.__mqttCallback_onPublish
