@@ -5,7 +5,7 @@ IRM BME680 Defines
 =======================================================
 '''
 GAS_HEATER_TEMPERATURE = 320 #IRM BME680's gas heater operating temperature
-GAS_HEATER_DURATION    = 150 #IRM BME680's gas heater startup duration (seconds)
+GAS_HEATER_DURATION    = 150 #IRM BME680's gas heater startup duration (microseconds)
 GAS_HEATER_PROFILE     = 0   #IRM BME680's chosen gas heating profile
 
 

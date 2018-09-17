@@ -267,7 +267,7 @@ class Meteo(object):
 
 	# IRM Connects to MQTT Broker as client
 	def __setupMQTTClient(self, address, port):
-		self.mqttC = mqttClient.Client(clean_session=False, client_id="METEO"+str(self.getStationNumber())+"_METEO")
+		self.mqttC = mqttClient.Client(client_id="METEO"+str(self.getStationNumber())+"_METEO")
 
 		self.mqttC.on_message = self.__mqttCallback_onMessage
 		self.mqttC.on_connect = self.__mqttCallback_onConnect

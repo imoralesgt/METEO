@@ -336,7 +336,7 @@ if __name__ == '__main__':
 	try:
 		while True:
 			print sensorAmbiental.getSensorData(True, True, True, True)
-			time.sleep(1)
+			time.sleep(2)
 	
 	except KeyboardInterrupt:
 		print '\n\n'

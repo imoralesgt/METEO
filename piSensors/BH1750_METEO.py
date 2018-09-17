@@ -52,7 +52,7 @@ class BH1750_METEO(object):
 			return False
 
 
-if __name__ == '__main__': #IRM Test code. Sampling sensor every 1 second.
+if __name__ == '__main__': #IRM Test code. Sampling sensor every second.
 
 	bh = BH1750_METEO()
 
